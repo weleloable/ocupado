@@ -86,17 +86,23 @@ func _submit() -> void:
 		_display.label_settings.font_color = Color(0.3, 1.0, 0.4)
 		Sfx.play("success")
 		GameState.solve_keypad()
-		await get_tree().create_timer(1.2).timeout
-		close()
+		var t := create_tween()
+		t.tween_interval(1.2)
+		t.tween_callback(close)
 	else:
 		_display.text = "ERROR"
 		_display.label_settings.font_color = Color(1.0, 0.25, 0.2)
 		Sfx.play("error")
 		GameState.say("keypad_wrong")
-		await get_tree().create_timer(0.8).timeout
-		_entered = ""
-		_locked = false
-		_refresh()
+		var t := create_tween()
+		t.tween_interval(0.8)
+		t.tween_callback(_reset_entry)
+
+
+func _reset_entry() -> void:
+	_entered = ""
+	_locked = false
+	_refresh()
 
 
 func _refresh() -> void:

@@ -14,7 +14,7 @@ func _ready() -> void:
 	for r in 4:
 		for c in 3:
 			add_mesh_box(Vector3(0.036, 0.03, 0.012), Vector3((c - 1) * 0.048, 0.035 - r * 0.046, 0.046), key_mat)
-	Build.label(self, "CÓDIGO", Vector3(0, 0.2, 0.02), 0.0, 20, Color(0.9, 0.9, 0.9), 0.004, 4)
+	Build.label(self, "CÓDIGO", Vector3(0, 0.2, 0.02), 0.0, 32, Color(0.95, 0.95, 0.9), 0.0025, 0)
 	add_shape(Vector3(0.26, 0.36, 0.1), Vector3(0, 0, 0.04))
 	GameState.keypad_solved.connect(_on_solved)
 

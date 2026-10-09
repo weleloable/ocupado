@@ -48,6 +48,22 @@ func _ready() -> void:
 	_check(GameState.mirror_done, "mirror revealed")
 	room.hot_tap.interact()
 
+	# Phone hint costs exactly 1 °C.
+	var before := GameState.get_temperature()
+	game._unhandled_input(_action_event("hint"))
+	_check(game.state == Game.UiState.PHONE and game.phone.visible, "phone opened with H")
+	game.phone.request_hint()
+	_check(GameState.hints_used == 1, "hint counted")
+	_check(GameState.get_temperature() - before > 0.99, "hint adds 1 C")
+	game._unhandled_input(_action_event("pause"))
+	_check(game.state == Game.UiState.PLAYING and not game.phone.visible, "phone closed with Esc")
+
+	# Pause and resume.
+	game._unhandled_input(_action_event("pause"))
+	_check(get_tree().paused and game.pause_menu.visible, "paused")
+	game._unhandled_input(_action_event("pause"))
+	_check(not get_tree().paused, "resumed")
+
 	# Puzzle 4: keypad, wrong code then right one.
 	room.keypad.interact()
 	_check(game.state == Game.UiState.KEYPAD, "keypad UI opened")
@@ -64,6 +80,11 @@ func _ready() -> void:
 	room.door.interact()
 	await _wait(2.5)
 	_check(GameState.won, "game won")
+	var has_victory := false
+	for c in game.get_children():
+		if c is VictoryScreen:
+			has_victory = true
+	_check(has_victory, "victory screen shown")
 	print("Temperatura final: %.1f, pistas: %d" % [GameState.final_temp, GameState.hints_used])
 
 	# Hints never fail, for every puzzle state.
@@ -74,6 +95,13 @@ func _ready() -> void:
 	print("AUTOTEST RESULT: ", "PASS" if _ok else "FAIL")
 	Engine.time_scale = 1.0
 	get_tree().quit(0 if _ok else 1)
+
+
+func _action_event(action: String) -> InputEventAction:
+	var ev := InputEventAction.new()
+	ev.action = action
+	ev.pressed = true
+	return ev
 
 
 func _wait(seconds: float) -> void:

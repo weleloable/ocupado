@@ -21,7 +21,7 @@ func _ready() -> void:
 	_sign_pivot.position = Vector3(0.45, 1.55, 0.04)
 	add_child(_sign_pivot)
 	track_mesh(Build.box(_sign_pivot, Vector3(0.52, 0.17, 0.012), Vector3.ZERO, Build.mat(Color(0.92, 0.9, 0.84))))
-	Build.label(_sign_pivot, "OCUPADO", Vector3(0, 0, 0.008), 0.0, 32, Color(0.75, 0.08, 0.08), 0.0042)
+	Build.label(_sign_pivot, "OCUPADO", Vector3(0, 0, 0.008), 0.0, 26, Color(0.75, 0.08, 0.08), 0.0042)
 	Build.label(_sign_pivot, "TIRAR", Vector3(0, 0, -0.008), PI, 34, Color(0.1, 0.3, 0.75), 0.0045)
 	GameState.keypad_solved.connect(_on_keypad_solved)
 
@@ -50,15 +50,15 @@ func _open_door() -> void:
 	var t := create_tween()
 	t.tween_property(get_parent(), "rotation:y", deg_to_rad(-105.0), 1.3) \
 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	await get_tree().create_timer(1.6).timeout
-	Sfx.play("fanfare")
-	GameState.win()
+	t.tween_interval(0.3)
+	t.tween_callback(Sfx.play.bind("fanfare", 0.0, 1.0))
+	t.tween_callback(GameState.win)
 
 
 func _on_keypad_solved() -> void:
 	prompt_text = "Tirar de la puerta"
-	await get_tree().create_timer(2.5).timeout
-	Sfx.play("click")
 	var t := create_tween()
+	t.tween_interval(2.5)
+	t.tween_callback(Sfx.play.bind("click", 0.0, 1.0))
+	t.tween_callback(GameState.say.bind("sign_flip"))
 	t.tween_property(_sign_pivot, "rotation:y", PI, 0.7).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	GameState.say("sign_flip")

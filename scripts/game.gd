@@ -12,6 +12,8 @@ var room: Room
 var player: Player
 var hud: Hud
 var keypad_ui: KeypadUi
+var phone: Phone
+var pause_menu: PauseMenu
 
 
 func _ready() -> void:
@@ -37,15 +39,28 @@ func _ready() -> void:
 	add_child(keypad_ui)
 	keypad_ui.closed.connect(_on_overlay_closed)
 
+	phone = Phone.new()
+	phone.process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_child(phone)
+	phone.closed.connect(_on_overlay_closed)
+
+	pause_menu = PauseMenu.new()
+	add_child(pause_menu)
+	pause_menu.resume_pressed.connect(_set_state.bind(UiState.PLAYING))
+	pause_menu.restart_pressed.connect(restart_requested.emit)
+	pause_menu.quit_pressed.connect(menu_requested.emit)
+
 	GameState.keypad_ui_requested.connect(_open_keypad)
 	GameState.game_won.connect(_on_won)
 	_set_state(UiState.PLAYING)
 
-	await get_tree().create_timer(0.8).timeout
-	GameState.say("start")
-	await get_tree().create_timer(9.0).timeout
-	if not GameState.lights_on:
-		GameState.say("start_hint")
+	var intro := create_tween()
+	intro.tween_interval(0.8)
+	intro.tween_callback(GameState.say.bind("start"))
+	intro.tween_interval(9.0)
+	intro.tween_callback(func() -> void:
+		if not GameState.lights_on:
+			GameState.say("start_hint"))
 
 
 func _exit_tree() -> void:
@@ -55,6 +70,7 @@ func _exit_tree() -> void:
 func _set_state(new_state: UiState) -> void:
 	state = new_state
 	get_tree().paused = state == UiState.PAUSED
+	pause_menu.visible = state == UiState.PAUSED
 	GameState.controls_locked = state != UiState.PLAYING
 	if state == UiState.PLAYING:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -71,6 +87,16 @@ func _unhandled_input(event: InputEvent) -> void:
 				_set_state(UiState.PLAYING)
 			UiState.KEYPAD:
 				keypad_ui.close()
+			UiState.PHONE:
+				phone.close()
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("hint"):
+		if state == UiState.PLAYING:
+			phone.open()
+			_set_state(UiState.PHONE)
+		elif state == UiState.PHONE:
+			phone.close()
 		get_viewport().set_input_as_handled()
 		return
 	if state != UiState.PLAYING:
@@ -104,5 +130,11 @@ func _on_overlay_closed() -> void:
 
 
 func _on_won() -> void:
+	keypad_ui.close()
+	phone.close()
 	_set_state(UiState.WON)
 	print("VICTORIA: tiempo %s, cerveza %.1f C" % [GameState.format_time(GameState.final_time), GameState.final_temp])
+	var victory := VictoryScreen.new()
+	add_child(victory)
+	victory.replay_pressed.connect(restart_requested.emit)
+	victory.menu_pressed.connect(menu_requested.emit)

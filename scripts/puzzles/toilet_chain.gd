@@ -30,6 +30,6 @@ func interact() -> void:
 	var t := create_tween()
 	t.tween_property(_chain_root, "position:y", -0.1, 0.12)
 	t.tween_property(_chain_root, "position:y", 0.0, 0.3)
+	t.tween_interval(FLUSH_TIME - 0.42)
+	t.tween_callback(func() -> void: _busy = false)
 	GameState.ritual_action("chain", "flush_idle")
-	await get_tree().create_timer(FLUSH_TIME).timeout
-	_busy = false

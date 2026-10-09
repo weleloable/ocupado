@@ -40,4 +40,38 @@ func _ready() -> void:
 		var path := out_dir.path_join("%s.png" % pose[3])
 		img.save_png(path)
 		print("saved ", path)
+	if "--ui" in OS.get_cmdline_user_args():
+		await _ui_shots()
 	get_tree().quit()
+
+
+func _snap(shot_name: String) -> void:
+	await get_tree().create_timer(0.4).timeout
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(out_dir.path_join(shot_name + ".png"))
+	print("saved ", shot_name)
+
+
+func _ui_shots() -> void:
+	game.player.global_position = Vector3(0, 0.05, 0.7)
+	game.player.rotation.y = 0.0
+	game.player.camera.rotation.x = 0.0
+	GameState.controls_locked = false
+	GameState.say_text("Texto de prueba del narrador, bastante largo para ver si cabe en dos líneas sin salirse de la caja.")
+	await get_tree().create_timer(3.0).timeout
+	await _snap("ui_hud")
+	var ev := InputEventAction.new()
+	ev.action = "hint"
+	ev.pressed = true
+	game._unhandled_input(ev)
+	game.phone.request_hint()
+	game.phone.request_hint()
+	await _snap("ui_phone")
+	game.phone.close()
+	GameState.keypad_ui_requested.emit()
+	game.keypad_ui.type_code("33")
+	await _snap("ui_keypad")
+	game.keypad_ui.close()
+	GameState.win()
+	await get_tree().create_timer(1.0).timeout
+	await _snap("ui_victory")

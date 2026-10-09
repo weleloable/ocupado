@@ -27,10 +27,10 @@ func interact() -> void:
 	_busy = true
 	Sfx.play("dryer")
 	var base := position
-	var t := create_tween().set_loops(12)
-	t.tween_property(self, "position", base + Vector3(0.004, 0, 0), 0.05)
-	t.tween_property(self, "position", base, 0.05)
+	var t := create_tween()
+	for _i in 12:
+		t.tween_property(self, "position", base + Vector3(0.004, 0, 0), 0.05)
+		t.tween_property(self, "position", base, 0.05)
+	t.tween_interval(RUN_TIME - 1.2)
+	t.tween_callback(func() -> void: _busy = false)
 	GameState.ritual_action("dryer", "dryer_idle")
-	await get_tree().create_timer(RUN_TIME).timeout
-	position = base
-	_busy = false
