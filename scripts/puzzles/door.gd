@@ -21,8 +21,8 @@ func _ready() -> void:
 	_sign_pivot.position = Vector3(0.45, 1.55, 0.04)
 	add_child(_sign_pivot)
 	track_mesh(Build.box(_sign_pivot, Vector3(0.52, 0.17, 0.012), Vector3.ZERO, Build.mat(Color(0.92, 0.9, 0.84))))
-	Build.label(_sign_pivot, "OCUPADO", Vector3(0, 0, 0.008), 0.0, 26, Color(0.75, 0.08, 0.08), 0.0042)
-	Build.label(_sign_pivot, "TIRAR", Vector3(0, 0, -0.008), PI, 34, Color(0.1, 0.3, 0.75), 0.0045)
+	Build.label_fit(_sign_pivot, "OCUPADO", Vector3(0, 0, 0.008), 0.0, Vector2(0.4, 0.1), Color(0.75, 0.08, 0.08))
+	Build.label_fit(_sign_pivot, "TIRAR", Vector3(0, 0, -0.008), PI, Vector2(0.36, 0.11), Color(0.1, 0.3, 0.75))
 	GameState.keypad_solved.connect(_on_keypad_solved)
 
 
@@ -53,6 +53,21 @@ func _open_door() -> void:
 	t.tween_interval(0.3)
 	t.tween_callback(Sfx.play.bind("fanfare", 0.0, 1.0))
 	t.tween_callback(GameState.win)
+
+
+## Used by the flood ending: the water bursts the door open (no win here, Flood handles it).
+func burst_open() -> void:
+	if _opening:
+		return
+	_opening = true
+	enabled = false
+	collision_layer = 0
+	if corridor_light != null:
+		corridor_light.visible = true
+	Sfx.play("door")
+	Sfx.play("clunk")
+	create_tween().tween_property(get_parent(), "rotation:y", deg_to_rad(-110.0), 0.45) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func _on_keypad_solved() -> void:

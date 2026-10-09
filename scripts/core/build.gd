@@ -115,6 +115,19 @@ static func static_box(parent: Node, size: Vector3, pos: Vector3, material: Mate
 	return body
 
 
+## Label scaled so the whole text fits inside `max_size` (meters), centered on `pos`.
+static func label_fit(parent: Node, text: String, pos: Vector3, rot_y: float, max_size: Vector2,
+		color: Color, outline: int = 0, font_size: int = 48) -> Label3D:
+	var font := ThemeDB.fallback_font
+	var lines := text.split("\n")
+	var widest := 1.0
+	for line in lines:
+		widest = maxf(widest, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x)
+	var height := font.get_height(font_size) * lines.size()
+	var pixel := minf(max_size.x / widest, max_size.y / height)
+	return label(parent, text, pos, rot_y, font_size, color, pixel, outline)
+
+
 static func label(parent: Node, text: String, pos: Vector3, rot_y: float, font_size: int,
 		color: Color, pixel_size: float = 0.004, outline: int = 0) -> Label3D:
 	var l := Label3D.new()

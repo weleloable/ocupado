@@ -125,8 +125,79 @@ const NARRATOR := {
 		"Está... limpio. Sospechosamente limpio.",
 		"El váter no es la salida. Ni lo pienses.",
 	],
+	"hot_tap_cold": [
+		"Sale fría. Fría fría. La llave del agua caliente estará cerrada.",
+		"Agua helada por el grifo caliente. Habrá una válvula roja en alguna tubería, digo yo.",
+		"El grifo caliente escupe agua fría. En este baño todo es mentira.",
+	],
+	"valve_open": [
+		"Las tuberías gorgotean. Algo caliente viene de camino.",
+		"Clonc. Las tuberías vibran. Agua caliente en camino, con la calma de un lunes.",
+	],
+	"valve_close": [
+		"Cierras la válvula. La caldera suspira, aliviada.",
+		"Válvula cerrada. El agua caliente vuelve a su cueva.",
+	],
+	"hot_water_arrives": [
+		"Por fin agua caliente. Este baño empieza a parecer una sauna finlandesa de baja categoría.",
+		"Sale vapor. El espejo está de acuerdo en ponerse misterioso.",
+	],
+	"tap_mixed": [
+		"Fría y caliente a la vez: tibia. Y la tibia no empaña nada.",
+		"Con los dos grifos abiertos sale agua tibia. Tibia, como tu cerveza... pronto.",
+	],
+	"plug_in": [
+		"Pones el tapón. Esto no puede acabar mal.",
+		"Tapón puesto. Los fontaneros ya te odian.",
+	],
+	"plug_out": [
+		"Quitas el tapón. Cobarde.",
+		"Tapón fuera. Los fontaneros respiran.",
+	],
+	"overflow_start": [
+		"El lavabo está a punto de rebosar. Esto va a salir regular.",
+		"El agua empieza a rebosar. Algo se ha roto: tu sentido común.",
+	],
+	"flood_rising": [
+		"El agua ya cubre el suelo. A tus amigos ni se les pasa por la cabeza que estés tramando esto.",
+		"Sube el agua. Es un plan. Pésimo, pero un plan.",
+	],
+	"flood_burst": [
+		"¡La puerta cede! El baño vomita agua y a ti detrás.",
+		"CRAAAC. La puerta no aguanta y el baño entero sale por ella.",
+	],
 	"test_object": [
 		"Esto es un objeto de prueba. Muy interactivo. Muy de prueba.",
+	],
+}
+
+## Ending texts shown on the victory screen.
+const ENDINGS := {
+	"door": {
+		"title": "¡LIBRE!",
+		"subtitle": "Has escapado del baño. Tu cerveza te esperaba.",
+		"name": "Final 1: Tirar, que no empujar",
+	},
+	"flood": {
+		"title": "¡DILUVIO!",
+		"subtitle": "Has escapado a lo bruto. El bar es ahora una piscina y tú, el culpable.",
+		"name": "Final 2: Que lo limpie el bar",
+	},
+}
+
+## Beer verdict by temperature range: <8, 8-14, 14-20, >20.
+const VERDICTS := {
+	"door": [
+		"Perfecta. Tus amigos ni se han dado cuenta.",
+		"Bebible. Con dignidad justa.",
+		"Caldo. Te la bebes por orgullo.",
+		"Se la ha bebido Paco. Hace rato.",
+	],
+	"flood": [
+		"Perfecta. Flotaba, pero perfecta.",
+		"Bebible. Mojada, pero bebible.",
+		"Caldo con espuma de lejía.",
+		"Se la ha bebido Paco. A nado.",
 	],
 }
 
@@ -138,14 +209,14 @@ const HINTS := {
 		["Paco", "Dale a la 2, a la 3 y a la 4. De nada. Por cierto, me estoy comiendo tu tapa."],
 	],
 	"ritual": [
-		["Marta", "Ahora que tienes luz, lee las paredes. En los baños de bar la respuesta siempre está escrita con rotulador."],
-		["Javi", "La pintada del ritual: usa esas cosas en ese orden exacto. Si fallas, se empieza de cero. Como mis relaciones."],
-		["Lucía", "Secador, cadena, grifo frío y otra vez secador. En ese orden. Como un parroquiano de verdad."],
+		["Marta", "Ahora que tienes luz negra, lee las paredes. Las pintadas hablan en clave, como mis ex."],
+		["Javi", "El viento que seca es el secador. El río que arrastra, la cadena. Lo frío que moja, el grifo frío. Y la veterana de 2009... ¿quién lleva aquí desde 2009? Pregúntale al narrador."],
+		["Lucía", "Secador, fregona, cadena, grifo frío y otra vez secador. Si fallas, desde el principio. Como un parroquiano de verdad."],
 	],
 	"mirror": [
-		["Paco", "¿Te has lavado las manos? Con agua caliente. Por higiene y por otras cosas."],
-		["Marta", "Abre el grifo caliente y espera un poco mirando al espejo. El vaho cuenta cosas."],
-		["Javi", "Grifo caliente abierto unos segundos y en el espejo sale '3 3'. Si lo cierras, se borra."],
+		["Paco", "¿Te has lavado las manos? Con agua caliente. Y que salga caliente, que no es lo mismo."],
+		["Marta", "Si el grifo caliente sale frío, alguien ha cerrado la llave de paso. Busca una válvula roja en una tubería. Y con el grifo frío cerrado, que si no sale tibia."],
+		["Javi", "Abre la válvula roja (tubería del váter), cierra el grifo frío, abre el caliente y espera unos segundos mirando al espejo. Sale '3 3'. Si cierras el grifo, se borra."],
 	],
 	"keypad": [
 		["Lucía", "Tienes trozos de un código, ¿no? Junta las piezas, que no es un mueble de Ikea."],
@@ -156,6 +227,7 @@ const HINTS := {
 		["Javi", "¿El teclado está verde y sigues dentro? Lee el cartel de la puerta, anda."],
 		["Lucía", "El cartel lo pone clarito: TIRAR. No empujar. Tirar."],
 		["Paco", "Mira la puerta y dale a la E. Tira. Ya. Tu cerveza está llorando."],
+		["Marta", "Y si lo tuyo es la salida a lo bruto, el lavabo tiene tapón por algo. Tapón, los dos grifos abiertos y paciencia. Yo no he dicho nada."],
 	],
 }
 

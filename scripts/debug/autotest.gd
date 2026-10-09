@@ -25,26 +25,37 @@ func _ready() -> void:
 		room.breaker.press(i)
 	_check(GameState.lights_on, "breaker solved with 3 presses")
 
-	# Puzzle 2: a wrong step first, then the right sequence.
+	# Puzzle 2: dryer, mop, chain, cold tap, dryer. A wrong step resets it.
 	room.dryer.interact()
 	await _wait(2.6)
 	_check(GameState.ritual_step == 1, "ritual step 1 after dryer")
-	room.cold_tap.interact()  # wrong: expected chain
+	room.chain.interact()  # wrong: the mop was expected
 	_check(GameState.ritual_step == 0, "ritual reset after mistake")
-	room.cold_tap.interact()  # close it again
+	await _wait(2.4)
+	room.hot_tap.interact()  # the hot tap is not part of the ritual
+	room.hot_tap.interact()
+	_check(GameState.ritual_step == 0, "hot tap is neutral for the ritual")
 	room.dryer.interact()
 	await _wait(2.6)
+	room.mop.interact()
+	_check(GameState.ritual_step == 2, "ritual step 2 after mop")
 	room.chain.interact()
 	await _wait(2.4)
 	room.cold_tap.interact()
+	_check(GameState.ritual_step == 4, "ritual step 4 after cold tap")
 	room.dryer.interact()
-	await _wait(1.0)
+	await _wait(0.5)
 	_check(GameState.ritual_done, "ritual solved")
-	room.cold_tap.interact()
 
-	# Puzzle 3: hot tap fogs the mirror.
-	room.hot_tap.interact()
+	# Puzzle 3: valve open + hot tap + cold tap closed + warm-up.
+	room.hot_tap.interact()  # valve still closed: runs cold
 	await _wait(5.0)
+	_check(not GameState.mirror_done and room.mirror.fog < 0.01, "no fog with the valve closed")
+	room.valve.interact()
+	await _wait(5.0)  # the cold tap is still open from the ritual: lukewarm
+	_check(not GameState.mirror_done, "lukewarm water does not fog")
+	room.cold_tap.interact()
+	await _wait(8.0)
 	_check(GameState.mirror_done, "mirror revealed")
 	room.hot_tap.interact()
 

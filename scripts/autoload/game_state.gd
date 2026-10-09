@@ -14,8 +14,10 @@ enum RitualResult { IGNORED, PROGRESS, FAIL, SOLVED }
 
 const START_TEMP := 4.0
 const SECONDS_PER_DEGREE := 40.0
-const RITUAL_SEQUENCE := ["dryer", "chain", "cold_tap", "dryer"]
+const RITUAL_SEQUENCE := ["dryer", "mop", "chain", "cold_tap", "dryer"]
 const CODE := "3312"
+const ENDINGS_PATH := "user://endings.cfg"
+const ENDING_IDS := ["door", "flood"]
 
 ## When true, main.gd skips the menu (used by "Reiniciar" / "Volver a jugar").
 var skip_menu: bool = false
@@ -34,6 +36,13 @@ var won: bool = false
 var final_time: float = 0.0
 var final_temp: float = 0.0
 var hint_levels: Dictionary = {}
+## Hot-water valve (red wheel on the toilet pipe) and sink plug: part of the mirror / flood mechanics.
+var valve_open: bool = false
+var plug_in: bool = false
+## Which ending was reached ("door" or "flood").
+var ending: String = "door"
+## Debug runs (autotest, screenshots) set this to false so they never touch the real save.
+var persist_endings: bool = true
 
 
 func _ready() -> void:
@@ -54,6 +63,9 @@ func reset() -> void:
 	final_time = 0.0
 	final_temp = 0.0
 	hint_levels = {}
+	valve_open = false
+	plug_in = false
+	ending = "door"
 
 
 func start() -> void:
@@ -153,13 +165,35 @@ func solve_keypad() -> void:
 	say("keypad_correct")
 
 
-func win() -> void:
+func win(ending_id: String = "door") -> void:
 	if won:
 		return
 	won = true
+	ending = ending_id
 	final_time = elapsed
 	final_temp = get_temperature()
+	if persist_endings:
+		_save_ending(ending_id)
 	game_won.emit()
+
+
+# --- Endings discovered (saved between sessions) ---
+
+static func discovered_endings() -> Array[String]:
+	var found: Array[String] = []
+	var cfg := ConfigFile.new()
+	if cfg.load(ENDINGS_PATH) == OK:
+		for id: String in ENDING_IDS:
+			if cfg.get_value("endings", id, false):
+				found.append(id)
+	return found
+
+
+func _save_ending(id: String) -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(ENDINGS_PATH)  # ok if the file does not exist yet
+	cfg.set_value("endings", id, true)
+	cfg.save(ENDINGS_PATH)
 
 
 # --- Hints ---
@@ -187,14 +221,15 @@ func request_hint() -> Dictionary:
 	return {"friend": str(entry[0]), "text": str(entry[1])}
 
 
-static func verdict(temp: float) -> String:
+static func verdict(temp: float, ending_id: String = "door") -> String:
+	var pool: Array = Lines.VERDICTS.get(ending_id, Lines.VERDICTS["door"])
 	if temp < 8.0:
-		return "Perfecta. Tus amigos ni se han dado cuenta."
+		return pool[0]
 	if temp < 14.0:
-		return "Bebible. Con dignidad justa."
+		return pool[1]
 	if temp < 20.0:
-		return "Caldo. Te la bebes por orgullo."
-	return "Se la ha bebido Paco. Hace rato."
+		return pool[2]
+	return pool[3]
 
 
 static func format_time(seconds: float) -> String:

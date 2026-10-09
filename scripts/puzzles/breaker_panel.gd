@@ -20,8 +20,8 @@ func _ready() -> void:
 	Build.collider(body, Vector3(0.8, 0.62, 0.08), Vector3(0, 0, 0.04))
 	# Yellow warning stripe.
 	Build.box(self, Vector3(0.8, 0.05, 0.01), Vector3(0, 0.285, 0.085), Build.mat(Color(0.95, 0.8, 0.1)))
-	Build.label(self, "CUADRO ELÉCTRICO\nNO TOCAR", Vector3(0, 0.43, 0.01), 0.0, 24,
-			Color(0.95, 0.85, 0.2), 0.004, 6)
+	Build.label_fit(self, "CUADRO ELÉCTRICO\nNO TOCAR", Vector3(0, 0.43, 0.01), 0.0, Vector2(0.74, 0.12),
+			Color(0.95, 0.85, 0.2), 8)
 	for i in 4:
 		var x := -0.27 + i * 0.18
 		var pm := Build.mat_unique(COLOR_OFF, 2.0, true)
@@ -33,7 +33,7 @@ func _ready() -> void:
 		sw.position = Vector3(x, -0.05, 0.08)
 		add_child(sw)
 		switches.append(sw)
-		Build.label(self, str(i + 1), Vector3(x, -0.23, 0.085), 0.0, 28, Color.BLACK, 0.004)
+		Build.label_fit(self, str(i + 1), Vector3(x, -0.23, 0.085), 0.0, Vector2(0.06, 0.07), Color.BLACK)
 	_refresh()
 	GameState.lights_turned_on.connect(_on_lights_on)
 

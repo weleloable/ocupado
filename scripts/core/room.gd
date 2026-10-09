@@ -26,6 +26,11 @@ var cold_tap: Tap
 var mirror: MirrorFog
 var dryer: HandDryer
 var dispenser: Dispenser
+var mop: Mop
+var valve: Valve
+var plug: SinkPlug
+var sink_mount: Node3D
+var flood: Flood
 
 var mat_tile: StandardMaterial3D
 var mat_paint: StandardMaterial3D
@@ -45,6 +50,7 @@ func _ready() -> void:
 	_build_south_wall()
 	_build_decor()
 	_build_graffiti()
+	_build_flood()
 	GameState.lights_turned_on.connect(_on_lights_on)
 
 
@@ -131,7 +137,7 @@ func _build_corridor() -> void:
 	Build.static_box(self, Vector3(0.2, H, 2.4), Vector3(1.4, H / 2.0, -2.9), m_wall)
 	Build.static_box(self, Vector3(1.8, H, 0.2), Vector3(0.4, H / 2.0, -4.1), m_wall)
 	Build.static_box(self, Vector3(1.8, 0.2, 2.4), Vector3(0.4, H + 0.1, -2.9), m_wall)
-	Build.label(self, "BAR", Vector3(0.4, 1.9, -3.99), 0.0, 64, Color(1.0, 0.55, 0.2), 0.007)
+	Build.label_fit(self, "BAR", Vector3(0.4, 1.9, -3.99), 0.0, Vector2(0.9, 0.45), Color(1.0, 0.55, 0.2))
 	# Stool with your beer on it.
 	Build.cylinder(self, 0.2, 0.05, Vector3(0.4, 0.75, -3.5), Build.mat(Color(0.3, 0.15, 0.08)))
 	Build.cylinder(self, 0.03, 0.75, Vector3(0.4, 0.375, -3.5), Build.mat(Color(0.4, 0.4, 0.42)))
@@ -155,7 +161,7 @@ func _build_lights() -> void:
 	emergency_light.omni_range = 4.5
 	add_child(emergency_light)
 	Build.box(self, Vector3(0.44, 0.15, 0.06), Vector3(0.4, 2.33, -1.47), Build.mat(Color(0.15, 0.85, 0.3), 1.5))
-	Build.label(self, "SALIDA", Vector3(0.4, 2.33, -1.437), 0.0, 24, Color.WHITE, 0.004)
+	Build.label_fit(self, "SALIDA", Vector3(0.4, 2.33, -1.437), 0.0, Vector2(0.36, 0.09), Color.WHITE)
 
 	var fill := OmniLight3D.new()
 	fill.position = Vector3(0, 2.2, 0.6)
@@ -207,6 +213,9 @@ func _build_east_wall() -> void:
 
 	var m := mount("east", 0.75, 0.0)
 	var porcelain := Build.mat(Color(0.93, 0.93, 0.9))
+	valve = Valve.new()
+	valve.position = Vector3(-0.12, 1.15, 0.05)
+	m.add_child(valve)
 	toilet = DecorItem.new().setup("Mirar el váter", "toilet")
 	m.add_child(toilet)
 	toilet.add_mesh_cylinder(0.17, 0.4, Vector3(0, 0.2, 0.36), porcelain)
@@ -250,8 +259,12 @@ func _build_west_wall() -> void:
 	m.add_child(cold_tap)
 	mirror = MirrorFog.new()
 	mirror.hot_tap = hot_tap
+	mirror.cold_tap = cold_tap
 	mirror.position = Vector3(0, 1.62, 0.0)
 	m.add_child(mirror)
+	plug = SinkPlug.new()
+	m.add_child(plug)
+	sink_mount = m
 
 
 ## South wall: hand dryer, paper dispenser.
@@ -264,20 +277,16 @@ func _build_south_wall() -> void:
 
 ## Mop in a corner and the "employees must wash hands" sign.
 func _build_decor() -> void:
-	var mop := DecorItem.new().setup("Mirar la fregona", "mop")
+	mop = Mop.new()
 	mop.position = Vector3(-1.65, 0.0, 1.15)
 	add_child(mop)
-	mop.add_mesh_cylinder(0.17, 0.28, Vector3(0, 0.14, 0), Build.mat(Color(0.85, 0.7, 0.15)))
-	mop.add_mesh_cylinder(0.015, 1.3, Vector3(0.05, 0.8, 0.0), Build.mat(Color(0.25, 0.4, 0.8)), Vector3(0, 0, -0.12))
-	mop.add_mesh_box(Vector3(0.2, 0.1, 0.2), Vector3(-0.02, 0.28, 0), Build.mat(Color(0.7, 0.68, 0.6)))
-	mop.add_shape(Vector3(0.4, 1.45, 0.4), Vector3(0, 0.72, 0))
 
 	var sign_mount := mount("south", 0.0, 1.95)
 	var sign := DecorItem.new().setup("Leer el cartel", "employees_sign")
 	sign_mount.add_child(sign)
 	sign.add_mesh_box(Vector3(0.62, 0.24, 0.015), Vector3(0, 0, 0.008), Build.mat(Color(0.95, 0.95, 0.9)))
-	Build.label(sign, "LOS EMPLEADOS DEBEN\nLAVARSE LAS MANOS", Vector3(0, 0, 0.017), 0.0, 24,
-			Color(0.1, 0.2, 0.55), 0.0035)
+	Build.label_fit(sign, "LOS EMPLEADOS DEBEN\nLAVARSE LAS MANOS", Vector3(0, 0, 0.017), 0.0,
+			Vector2(0.54, 0.17), Color(0.1, 0.2, 0.55))
 	sign.add_shape(Vector3(0.64, 0.26, 0.05), Vector3(0, 0, 0.02))
 
 
@@ -285,27 +294,41 @@ func _build_graffiti() -> void:
 	var marker := Color(0.08, 0.08, 0.1)
 	var red := Color(0.6, 0.08, 0.08)
 	var blue := Color(0.1, 0.2, 0.6)
-	_graffiti("north", 1.45, 1.8, "AQUÍ SE VIENE\nA LLORAR", 26, marker, false)
-	_graffiti("south", -0.9, 1.85, "SI LEES ESTO,\nESTÁS EN UN BAÑO", 24, red, false)
-	_graffiti("west", 1.0, 1.72, "LA LLAVE ESTÁ\nEN TU CORAZÓN\n(es broma, es un teclado)", 22, blue, false)
-	_graffiti("east", 0.3, 1.72, "PACO\nTE QUIERO\n(NO)", 24, red, false)
+	_graffiti("north", 1.45, 1.8, "AQUÍ SE VIENE\nA LLORAR", Vector2(0.85, 0.3), marker, false)
+	_graffiti("south", -0.9, 1.85, "SI LEES ESTO,\nESTÁS EN UN BAÑO", Vector2(0.85, 0.3), red, false)
+	_graffiti("west", 1.0, 1.72, "LA LLAVE ESTÁ\nEN TU CORAZÓN\n(es broma, es un teclado)", Vector2(0.9, 0.4), blue, false)
+	_graffiti("east", 0.3, 1.72, "PACO\nTE QUIERO\n(NO)", Vector2(0.55, 0.4), red, false)
 	# Hidden until the black light turns on.
 	var neon := Color(0.75, 1.0, 0.2)
 	var pink := Color(1.0, 0.35, 0.85)
+	var cyan := Color(0.3, 0.95, 1.0)
 	_graffiti("north", -1.28, 1.86,
-			"EL RITUAL DEL PARROQUIANO:\n1. SECADOR\n2. CADENA\n3. GRIFO FRÍO\n4. SECADOR", 20, neon, true)
-	_graffiti("west", 0.95, 2.25, "EL GRIFO CALIENTE\nGUARDA SECRETOS", 22, pink, true)
-	_graffiti("south", 0.9, 1.88, "EL PAPEL NO SE GANA,\nSE MERECE", 20, pink, true)
-	_graffiti("east", -0.75, 2.3, "ESTO NO SE LIMPIA\nDESDE 2009", 20, neon, true)
+			"EL RITUAL DEL PARROQUIANO\n1. EL VIENTO QUE SECA\n2. LA VETERANA DE 2009\n3. EL RÍO QUE ARRASTRA\n4. LO FRÍO QUE MOJA\n5. OTRA VEZ EL VIENTO",
+			Vector2(1.15, 0.7), neon, true)
+	_graffiti("west", 0.95, 2.2, "EL CALIENTE NO SALE\nSI ALGUIEN LO CIERRA", Vector2(1.0, 0.3), pink, true)
+	_graffiti("south", 0.9, 1.88, "EL PAPEL NO SE GANA,\nSE MERECE", Vector2(0.8, 0.2), pink, true)
+	_graffiti("east", -0.75, 2.3, "ESTO NO SE LIMPIA\nDESDE 2009", Vector2(0.75, 0.2), neon, true)
+	_graffiti("west", -1.0, 1.9, "¿PRISA?\nTAPA EL LAVABO,\nABRE TODO Y ESPERA.\nEL BAR YA LIMPIARÁ", Vector2(0.8, 0.5), cyan, true)
 
 
-func _graffiti(wall: String, along: float, y: float, text: String, size: int, color: Color, hidden: bool) -> void:
+func _graffiti(wall: String, along: float, y: float, text: String, max_size: Vector2, color: Color,
+		hidden: bool) -> void:
 	var m := mount(wall, along, y)
-	var l := Build.label(m, text, Vector3(0, 0, 0.012), 0.0, size, color, 0.0045, 6 if hidden else 0)
+	var l := Build.label_fit(m, text, Vector3(0, 0, 0.012), 0.0, max_size, color, 5 if hidden else 0)
 	if hidden:
 		l.outline_modulate = Color(color.r * 0.3, color.g * 0.3, color.b * 0.3)
 		l.visible = false
 		hidden_labels.append(l)
+
+
+## Flood controller of the secret ending (needs the taps, the door and the sink mount).
+func _build_flood() -> void:
+	flood = Flood.new()
+	flood.hot_tap = hot_tap
+	flood.cold_tap = cold_tap
+	flood.door = door
+	flood.sink_mount = sink_mount
+	add_child(flood)
 
 
 func _on_lights_on() -> void:

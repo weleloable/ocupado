@@ -1,6 +1,8 @@
 class_name Tap
 extends Interactable
-## Sink tap (hot or cold). Opening counts for the ritual; the hot one fogs the mirror.
+## Sink tap (hot or cold).
+## Cold: opening it is a ritual step; open together with the hot one the water turns lukewarm.
+## Hot: runs cold until the red valve is opened; then it steams up the mirror (see MirrorFog).
 
 var is_hot: bool = false
 var is_open: bool = false
@@ -27,7 +29,7 @@ func interact() -> void:
 	if is_open:
 		Sfx.start_loop(loop_id, "tap", -10.0)
 		if is_hot:
-			GameState.ritual_action("hot_tap", "hot_tap_on")
+			GameState.say("hot_tap_on" if GameState.valve_open else "hot_tap_cold")
 		else:
 			GameState.ritual_action("cold_tap", "cold_tap_on")
 	else:

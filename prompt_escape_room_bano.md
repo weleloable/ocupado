@@ -35,8 +35,12 @@ Hay una cruceta pequeña en el centro. Cuando apuntas a algo interactuable a men
 - **Secador de manos** en la pared.
 - **Váter** con cisterna alta y cadena.
 - **Dispensador de papel** metálico, cerrado.
+- **Válvula roja** (rueda con etiqueta "AGUA CALIENTE") en la tubería que sube hasta la cisterna del váter. *(v2)*
+- **Tapón** del lavabo, suelto junto a la pila. *(v2)*
 - **Pintadas** en las paredes (usa `Label3D`): algunas visibles desde el principio y son solo chistes, otras ocultas hasta que se enciende la luz negra.
-- Un rollo de papel vacío, una fregona, un cartel de "Empleados deben lavarse las manos": decoración interactuable que solo dispara comentarios del narrador.
+- Un rollo de papel vacío, un cartel de "Empleados deben lavarse las manos": decoración interactuable que solo dispara comentarios del narrador.
+- Una **fregona** ("la veterana de 2009"): decoración con comentario del narrador, pero además es uno de los elementos del ritual (puzle 2). *(v2)*
+- **Todos los textos `Label3D` deben encajar y estar centrados en su soporte** (cartel, botón, panel, pintada). Se usa el helper `Build.label_fit(parent, texto, pos, rot_y, tamaño_máximo_en_metros, color)`, que calcula el tamaño para que el texto quepa en el hueco; nunca se fija el tamaño a ojo. *(v2)*
 
 Al empezar, la sala solo tiene una luz de emergencia tenue.
 
@@ -44,15 +48,33 @@ Al empezar, la sala solo tiene una luz de emergencia tenue.
 
 No hay inventario. Cada puzle revela información o activa algo.
 
-**1. Cuadro eléctrico (lógica).** Cuatro interruptores en fila; cada uno invierte su piloto y el de sus vecinos (estilo Lights Out). El objetivo es dejar los cuatro pilotos encendidos. Elige un estado inicial que requiera al menos 3 pulsaciones y comprueba por fuerza bruta en un test que tiene solución. Al resolverlo se enciende la luz general y una **luz negra** que revela pintadas ocultas. Una de ellas es "El ritual del parroquiano" con cuatro iconos o palabras en orden: SECADOR → CADENA → GRIFO FRÍO → SECADOR.
+**1. Cuadro eléctrico (lógica).** Cuatro interruptores en fila; cada uno invierte su piloto y el de sus vecinos (estilo Lights Out). El objetivo es dejar los cuatro pilotos encendidos. Elige un estado inicial que requiera al menos 3 pulsaciones y comprueba por fuerza bruta en un test que tiene solución. Al resolverlo se enciende la luz general y una **luz negra** que revela pintadas ocultas, entre ellas el poema de "El ritual del parroquiano". *(Sin cambios en la v2: gustó tal cual.)*
 
-**2. El ritual (secuencia).** Hay que accionar esos elementos en ese orden exacto. Un error reinicia la secuencia (con burla del narrador). Los elementos se pueden usar libremente antes de resolver el puzle 1, pero la secuencia solo cuenta cuando la luz negra está encendida. Al completarla, el dispensador de papel se abre con un ruido y muestra una nota: "_ _ 1 2".
+**2. El ritual (secuencia en clave, 5 pasos).** *(Rediseñado en la v2.)* La pintada oculta ya no dice los nombres de los elementos, sino una adivinanza. Hay que descifrarla y accionar los elementos en ese orden exacto:
 
-**3. El espejo (mecanismo).** Abrir el grifo caliente durante unos segundos empaña el espejo y aparece escrito con el dedo "3 3 _ _". Si se cierra el grifo, el vaho desaparece poco a poco. Este puzle se puede resolver en cualquier momento.
+> EL RITUAL DEL PARROQUIANO
+> 1. EL VIENTO QUE SECA → **secador de manos**
+> 2. LA VETERANA DE 2009 → **fregona** (el narrador dice que "lleva aquí desde 2009", y otra pintada oculta repite "no se limpia desde 2009")
+> 3. EL RÍO QUE ARRASTRA → **cadena** del váter
+> 4. LO FRÍO QUE MOJA → **grifo frío** (cuenta al *abrirlo*, no al cerrarlo)
+> 5. OTRA VEZ EL VIENTO → **secador** otra vez
+
+Reglas: solo cuentan secador, fregona, cadena y grifo frío. El grifo caliente, la válvula, el espejo y el resto de decoración **no** reinician el ritual. Un elemento equivocado reinicia la secuencia (con burla del narrador); si el elemento equivocado es el secador, cuenta como primer paso. Los elementos se pueden usar libremente antes de resolver el puzle 1, pero la secuencia solo cuenta cuando la luz negra está encendida. Al completarla, el dispensador de papel se abre con un ruido y muestra una nota: "_ _ 1 2".
+
+**3. El espejo (mecanismo en cadena).** *(Rediseñado en la v2.)* Ya no basta con abrir el grifo caliente. El espejo solo se empaña y muestra con el dedo "3 3 _ _" si se cumplen **a la vez** estas condiciones:
+1. La **válvula roja** (tubería del váter) está abierta. Si no lo está, el grifo caliente sale frío y el narrador insinúa que hay una válvula. Una pintada oculta lo refuerza: "El caliente no sale si alguien lo cierra".
+2. El grifo caliente lleva abierto unos **2,5 s** (primero sale agua fría de la tubería; el narrador avisa cuando llega el agua caliente).
+3. El **grifo frío está cerrado**: con los dos abiertos el agua sale tibia y la tibia no empaña (el narrador lo comenta). Es una trampa natural, porque el ritual deja el grifo frío abierto.
+Después hacen falta unos 5 s de vapor. Si se deja de cumplir cualquiera de las condiciones, el vaho desaparece poco a poco (unos 14 s). Este puzle se puede resolver en cualquier momento, también antes de encender la luz.
 
 **4. Teclado de la puerta (código).** Al interactuar se abre una interfaz 2D con teclado numérico (ratón visible, Esc para cerrar). Código correcto: **3312**. Un código incorrecto da un pitido de error y un comentario del narrador.
 
-**Final (chiste).** Al introducir el código correcto, el teclado se pone verde... y la puerta sigue sin abrir. El cartel de la puerta, que hasta ahora estaba girado o medio tapado, dice "TIRAR". El narrador comenta que el teclado nunca estuvo conectado a nada. El jugador interactúa con la puerta, se abre, y aparece la pantalla de victoria.
+**Final 1 (chiste): "Tirar, que no empujar".** Al introducir el código correcto, el teclado se pone verde... y la puerta sigue sin abrir. El cartel de la puerta, que hasta ahora estaba girado o medio tapado, dice "TIRAR". El narrador comenta que el teclado nunca estuvo conectado a nada. El jugador interactúa con la puerta, se abre, y aparece la pantalla de victoria.
+
+**Final 2 (secreto): "Que lo limpie el bar".** *(Nuevo en la v2.)* No hace falta resolver ningún puzle. Si el jugador **pone el tapón** en el lavabo y deja **abiertos los dos grifos** (caliente y frío) durante unos 14 s, el lavabo rebosa, el agua sube por la sala (animación visible de agua translúcida hasta ~1 m), la puerta revienta y aparece la pantalla de victoria con otro título ("¡DILUVIO!"), otro subtítulo y otros veredictos de la cerveza. Reglas:
+- Si el jugador cierra un grifo o quita el tapón, el agua baja poco a poco (no se pierde nada ni hay estado sin solución).
+- Las pistas están ocultas: una pintada de luz negra ("¿Prisa? Tapa el lavabo, abre todo y espera. El bar ya limpiará") y, tras resolver el teclado, una cuarta pista del móvil.
+- El juego guarda en `user://endings.cfg` los finales descubiertos y muestra "Finales descubiertos: X/2" en el menú y en la pantalla final.
 
 ## La cerveza (puntuación)
 
@@ -62,6 +84,8 @@ En el HUD hay un termómetro pequeño con la temperatura de tu cerveza. Empieza 
 - 8-14 °C: "Bebible. Con dignidad justa."
 - 14-20 °C: "Caldo. Te la bebes por orgullo."
 - Más de 20 °C: "Se la ha bebido Paco. Hace rato."
+
+En el final 2 ("Diluvio") los veredictos son otros: "Perfecta. Flotaba, pero perfecta." / "Bebible. Mojada, pero bebible." / "Caldo con espuma de lejía." / "Se la ha bebido Paco. A nado."
 
 ## Narrador sarcástico
 
@@ -76,6 +100,8 @@ Un texto en la parte inferior de la pantalla, con efecto máquina de escribir y 
 
 Con H aparece el móvil (overlay 2D) con un chat de grupo de tus amigos. Cada vez que pides pista, un amigo manda un mensaje con una pista del puzle activo: tres niveles por puzle (vaga, clara, solución directa), siempre mezclada con cachondeo ("¿sigues ahí? Has probado a darle a la luz, lumbreras"). Cada pista sube 1 °C la cerveza.
 
+Los niveles de las pistas del ritual y del espejo (v2) son: ritual → "las pintadas hablan en clave" / qué elemento es cada verso (viento = secador, río = cadena, frío = grifo frío, la veterana de 2009 = fregona) / el orden completo; espejo → "que salga caliente" / "busca una válvula roja y cierra el grifo frío" / los pasos exactos. Al llegar a la puerta, la cuarta pista insinúa el final secreto del tapón.
+
 ## Estilo visual: primitivas + retro
 
 No hay modelos ni texturas externas; todo se construye con primitivas (`BoxMesh`, `CylinderMesh`, etc.) y materiales de color plano.
@@ -86,10 +112,12 @@ Para el aspecto retro, lo más robusto: resolución interna baja (por ejemplo 48
 
 Sin archivos de audio. Genera los sonidos por código al arrancar, creando `AudioStreamWAV` a partir de muestras calculadas (ondas cuadradas, ruido, barridos): pitido de tecla, error, acierto, clic de interruptor, cisterna (ruido filtrado), secador (ruido continuo), grifo, y una fanfarria corta de victoria. Un zumbido de fluorescente de fondo si es fácil.
 
+Sonidos añadidos en la v2: "clunk" y "rattle" para la válvula y el tapón, y reutiliza "door" y "fanfare" en la inundación.
+
 ## Menú y pantalla final
 
-- **Menú inicial:** título, "Jugar", "Salir" y los controles.
-- **Pantalla de victoria:** tiempo, temperatura de la cerveza, veredicto y "Volver a jugar".
+- **Menú inicial:** título, "Jugar", "Salir", los controles y "Finales descubiertos: X/2".
+- **Pantalla de victoria:** título y nombre del final alcanzado, tiempo, temperatura de la cerveza, veredicto, finales descubiertos y "Volver a jugar" / "Menú principal". Hay dos finales: "Tirar, que no empujar" (puerta) y "Que lo limpie el bar" (diluvio).
 
 ## Requisitos técnicos
 
@@ -100,6 +128,7 @@ Sin archivos de audio. Genera los sonidos por código al arrancar, creando `Audi
 - Arquitectura sencilla: un autoload `GameState` (progreso de puzles, tiempo, temperatura, señales), una clase base `Interactable` con método `interact()` y texto de prompt, y un script por puzle.
 - Jugador: `CharacterBody3D` con `RayCast3D` para interactuar. Colisiones en paredes y muebles para que no se pueda salir de la sala.
 - **Teclas de depuración:** F1-F4 resuelven al instante cada puzle. Las necesito para probar el final sin jugar todo.
+- **Herramientas de prueba (v2):** `godot --headless --path . -- --autotest` juega la partida entera con los objetos reales y debe acabar en PASS; `-- --autotest-flood` prueba el final secreto; `--script res://tests/test_lights_out.gd` comprueba el cuadro eléctrico. `-- --shots=<carpeta> [--closeups] [--lights] [--solve=1234] [--flood] [--ui]` guarda capturas de pantalla para revisar carteles y colocaciones. Los modos de prueba nunca modifican los finales guardados del jugador.
 
 ## Cómo trabajar
 
@@ -117,6 +146,29 @@ Haz un commit de git al final de cada fase.
 ## Hecho significa
 
 - El juego arranca sin errores en consola.
-- Se puede completar de principio a fin jugando normal, y también usando F1-F4.
+- Se puede completar de principio a fin jugando normal, y también usando F1-F4. Los dos finales son alcanzables.
 - Ningún puzle puede quedar en un estado sin solución.
+- Ningún texto 3D se sale de su cartel, botón o panel (se revisa con las capturas `--closeups`).
 - Hay menú, narrador, pistas, sonido y pantalla final con la temperatura de la cerveza.
+
+## Registro de cambios
+
+### v2: cambios tras la primera prueba
+
+Comentarios del jugador tras probar la v1: "algunos textos de carteles están descentrados", "el cuadro eléctrico me gustó, pero los otros puzles son muy simples", "añade un final más".
+
+1. **Textos de carteles:** causa real: el texto estaba centrado pero era más ancho que su soporte (cartel de empleados, "PULSE" del secador, "OCUPADO", "CÓDIGO", etc.). Ahora todos usan `Build.label_fit`, que ajusta el tamaño al hueco. Revisado con capturas en primer plano.
+2. **Puzle 2, el ritual:** de 4 pasos con los nombres a la vista a **5 pasos en clave** (adivinanza), con la **fregona** como nuevo elemento. Hay que haber mirado la fregona para entender "la veterana de 2009". Cuenta solo el grifo frío *al abrirlo*.
+3. **Puzle 3, el espejo:** de "abre un grifo" a una **cadena de 3 condiciones** (válvula roja abierta, agua caliente con 2,5 s de retraso, grifo frío cerrado). Nuevos objetos: `Valve` (válvula roja). Nuevos mensajes del narrador para cada fallo.
+4. **Final 2, el diluvio:** nuevos objetos `SinkPlug` (tapón) y `Flood` (controlador de la inundación). Pantalla de victoria con varios finales y registro persistente de los finales descubiertos.
+5. **Pistas del móvil:** reescritas las del ritual y el espejo, y nueva cuarta pista en la puerta que insinúa el final secreto.
+6. **Pruebas automáticas:** el autotest cubre el ritual nuevo, el espejo (incluidas las trampas: válvula cerrada y agua tibia) y hay un autotest propio del final del diluvio.
+
+### Qué probar a mano en la siguiente sesión
+
+- ¿Se entiende la adivinanza del ritual sin pistas? ¿Es demasiado difícil o demasiado fácil con la fregona?
+- ¿Se descubre la válvula roja por el mensaje del narrador cuando el grifo caliente sale frío?
+- ¿Es frustrante que el ritual deje el grifo frío abierto y haya que cerrarlo para el espejo? (Es intencionado, pero conviene confirmarlo.)
+- Final 2: ¿se encuentra la pintada de la pared oeste? ¿Los 14 s de inundación se hacen largos? (`TIME_TO_FLOOD` en `scripts/puzzles/flood.gd`.)
+- Sonido: no se ha podido escuchar nunca; revisar volúmenes.
+- Carteles: ¿queda alguno descentrado o ilegible desde la distancia normal de juego?

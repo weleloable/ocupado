@@ -13,7 +13,7 @@ func _ready() -> void:
 	add_mesh_box(Vector3(0.34, 0.28, 0.2), Vector3(0, 0, 0.1), white)
 	add_mesh_cylinder(0.045, 0.1, Vector3(0, -0.18, 0.13), Build.mat(Color(0.6, 0.6, 0.62)))
 	add_mesh_box(Vector3(0.12, 0.04, 0.01), Vector3(0, 0.06, 0.205), Build.mat(Color(0.15, 0.15, 0.15)))
-	Build.label(self, "PULSE", Vector3(0, 0.06, 0.212), 0.0, 32, Color.WHITE, 0.0018)
+	Build.label_fit(self, "PULSE", Vector3(0, 0.06, 0.212), 0.0, Vector2(0.09, 0.028), Color.WHITE)
 	add_shape(Vector3(0.38, 0.4, 0.26), Vector3(0, -0.04, 0.13))
 
 

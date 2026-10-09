@@ -25,5 +25,7 @@ func _ready() -> void:
 	UiUtil.label(root,
 			"WASD moverse  ·  Ratón mirar  ·  E / clic interactuar\nH pedir pista por el móvil  ·  Esc pausa",
 			Vector2(0, 262), Vector2(640, 36), 12, Color(0.75, 0.85, 0.75), HORIZONTAL_ALIGNMENT_CENTER)
+	UiUtil.label(root, "Finales descubiertos: %d/%d" % [GameState.discovered_endings().size(), GameState.ENDING_IDS.size()],
+			Vector2(0, 304), Vector2(640, 16), 11, Color(0.7, 0.85, 1.0), HORIZONTAL_ALIGNMENT_CENTER)
 	UiUtil.label(root, "Game jam · Godot " + Engine.get_version_info()["string"], Vector2(0, 336),
 			Vector2(632, 16), 9, Color(1, 1, 1, 0.35), HORIZONTAL_ALIGNMENT_RIGHT, 0)

@@ -4,6 +4,7 @@ extends Node
 
 const Screenshots := preload("res://scripts/debug/screenshots.gd")
 const Autotest := preload("res://scripts/debug/autotest.gd")
+const AutotestFlood := preload("res://scripts/debug/autotest_flood.gd")
 
 var game: Game
 var menu: MainMenu
@@ -13,21 +14,32 @@ func _ready() -> void:
 	var shots_dir := ""
 	var lights := false
 	var autotest := false
+	var autotest_flood := false
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with("--shots="):
 			shots_dir = arg.substr(8)
 		elif arg == "--lights":
 			lights = true
+		elif arg == "--autotest-flood":
+			autotest_flood = true
 		elif arg == "--autotest":
 			autotest = true
 
-	if autotest or not shots_dir.is_empty() or GameState.skip_menu:
+	var debug_run := autotest or autotest_flood or not shots_dir.is_empty()
+	if debug_run or "--restart-test" in OS.get_cmdline_user_args():
+		GameState.persist_endings = false
+	if debug_run or GameState.skip_menu:
 		_start_game()
 	else:
 		_show_menu()
 
 	if "--restart-test" in OS.get_cmdline_user_args():
 		_restart_test()
+	if autotest_flood:
+		var flood_test := AutotestFlood.new()
+		flood_test.game = game
+		flood_test.process_mode = Node.PROCESS_MODE_ALWAYS
+		add_child(flood_test)
 	if autotest:
 		var test := Autotest.new()
 		test.game = game
