@@ -14,6 +14,7 @@ var black_light: OmniLight3D
 var corridor_light: OmniLight3D
 var tube_mat: StandardMaterial3D
 var black_tube_mat: StandardMaterial3D
+var hidden_labels: Array[Label3D] = []
 
 var door: Door
 var keypad: Keypad
@@ -42,6 +43,8 @@ func _ready() -> void:
 	_build_east_wall()
 	_build_west_wall()
 	_build_south_wall()
+	_build_decor()
+	_build_graffiti()
 	GameState.lights_turned_on.connect(_on_lights_on)
 
 
@@ -259,7 +262,55 @@ func _build_south_wall() -> void:
 	mount("south", 0.9, 1.35).add_child(dispenser)
 
 
+## Mop in a corner and the "employees must wash hands" sign.
+func _build_decor() -> void:
+	var mop := DecorItem.new().setup("Mirar la fregona", "mop")
+	mop.position = Vector3(-1.65, 0.0, 1.15)
+	add_child(mop)
+	mop.add_mesh_cylinder(0.17, 0.28, Vector3(0, 0.14, 0), Build.mat(Color(0.85, 0.7, 0.15)))
+	mop.add_mesh_cylinder(0.015, 1.3, Vector3(0.05, 0.8, 0.0), Build.mat(Color(0.25, 0.4, 0.8)), Vector3(0, 0, -0.12))
+	mop.add_mesh_box(Vector3(0.2, 0.1, 0.2), Vector3(-0.02, 0.28, 0), Build.mat(Color(0.7, 0.68, 0.6)))
+	mop.add_shape(Vector3(0.4, 1.45, 0.4), Vector3(0, 0.72, 0))
+
+	var sign_mount := mount("south", 0.0, 1.95)
+	var sign := DecorItem.new().setup("Leer el cartel", "employees_sign")
+	sign_mount.add_child(sign)
+	sign.add_mesh_box(Vector3(0.62, 0.24, 0.015), Vector3(0, 0, 0.008), Build.mat(Color(0.95, 0.95, 0.9)))
+	Build.label(sign, "LOS EMPLEADOS DEBEN\nLAVARSE LAS MANOS", Vector3(0, 0, 0.017), 0.0, 24,
+			Color(0.1, 0.2, 0.55), 0.0035)
+	sign.add_shape(Vector3(0.64, 0.26, 0.05), Vector3(0, 0, 0.02))
+
+
+func _build_graffiti() -> void:
+	var marker := Color(0.08, 0.08, 0.1)
+	var red := Color(0.6, 0.08, 0.08)
+	var blue := Color(0.1, 0.2, 0.6)
+	_graffiti("north", 1.45, 1.8, "AQUÍ SE VIENE\nA LLORAR", 26, marker, false)
+	_graffiti("south", -0.9, 1.85, "SI LEES ESTO,\nESTÁS EN UN BAÑO", 24, red, false)
+	_graffiti("west", 1.0, 1.72, "LA LLAVE ESTÁ\nEN TU CORAZÓN\n(es broma, es un teclado)", 22, blue, false)
+	_graffiti("east", 0.3, 1.72, "PACO\nTE QUIERO\n(NO)", 24, red, false)
+	# Hidden until the black light turns on.
+	var neon := Color(0.75, 1.0, 0.2)
+	var pink := Color(1.0, 0.35, 0.85)
+	_graffiti("north", -1.28, 1.86,
+			"EL RITUAL DEL PARROQUIANO:\n1. SECADOR\n2. CADENA\n3. GRIFO FRÍO\n4. SECADOR", 20, neon, true)
+	_graffiti("west", 0.95, 2.25, "EL GRIFO CALIENTE\nGUARDA SECRETOS", 22, pink, true)
+	_graffiti("south", 0.9, 1.88, "EL PAPEL NO SE GANA,\nSE MERECE", 20, pink, true)
+	_graffiti("east", -0.75, 2.3, "ESTO NO SE LIMPIA\nDESDE 2009", 20, neon, true)
+
+
+func _graffiti(wall: String, along: float, y: float, text: String, size: int, color: Color, hidden: bool) -> void:
+	var m := mount(wall, along, y)
+	var l := Build.label(m, text, Vector3(0, 0, 0.012), 0.0, size, color, 0.0045, 6 if hidden else 0)
+	if hidden:
+		l.outline_modulate = Color(color.r * 0.3, color.g * 0.3, color.b * 0.3)
+		l.visible = false
+		hidden_labels.append(l)
+
+
 func _on_lights_on() -> void:
+	for l in hidden_labels:
+		l.visible = true
 	tube_mat.emission_enabled = true
 	tube_mat.emission = Color(0.9, 1.0, 0.9)
 	tube_mat.emission_energy_multiplier = 2.0

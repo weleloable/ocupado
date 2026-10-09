@@ -26,6 +26,8 @@ func _ready() -> void:
 	else:
 		_show_menu()
 
+	if "--restart-test" in OS.get_cmdline_user_args():
+		_restart_test()
 	if autotest:
 		var test := Autotest.new()
 		test.game = game
@@ -38,6 +40,29 @@ func _ready() -> void:
 		shots.lights = lights
 		shots.process_mode = Node.PROCESS_MODE_ALWAYS
 		add_child(shots)
+
+
+## Debug: menu -> play -> restart -> menu, printing the state at each step.
+func _restart_test() -> void:
+	var step: int = Engine.get_meta("restart_step", 0)
+	Engine.set_meta("restart_step", step + 1)
+	var t := create_tween()
+	t.tween_interval(1.0)
+	match step:
+		0:
+			print("menu at start: %s" % (menu != null))
+			t.tween_callback(func() -> void: menu.play_pressed.emit())
+			t.tween_interval(1.0)
+			t.tween_callback(func() -> void:
+				print("play from menu: game=%s running=%s" % [game != null, GameState.running])
+				GameState.solve_lights()
+				game.restart_requested.emit())
+		1:
+			print("restart: game=%s menu=%s lights_on=%s" % [game != null, menu != null, GameState.lights_on])
+			t.tween_callback(func() -> void: game.menu_requested.emit())
+		2:
+			print("back to menu: menu=%s game=%s" % [menu != null, game != null])
+			t.tween_callback(get_tree().quit)
 
 
 func _show_menu() -> void:

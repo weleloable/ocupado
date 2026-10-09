@@ -19,7 +19,7 @@ func _ready() -> void:
 	add_child(_lid_pivot)
 	track_mesh(Build.box(_lid_pivot, Vector3(0.35, 0.41, 0.014), Vector3(0, 0.205, 0), metal))
 	track_mesh(Build.box(_lid_pivot, Vector3(0.05, 0.05, 0.02), Vector3(0, 0.36, 0.012), Build.mat(Color(0.2, 0.2, 0.2))))
-	Build.label(_lid_pivot, "PAPEL", Vector3(0, 0.22, 0.009), 0.0, 24, Color(0.2, 0.2, 0.25), 0.004)
+	Build.label(_lid_pivot, "PAPEL", Vector3(0, 0.22, 0.009), 0.0, 40, Color(0.15, 0.15, 0.2), 0.0025)
 	add_shape(Vector3(0.38, 0.44, 0.16), Vector3(0, 0, 0.08))
 	GameState.ritual_solved.connect(_on_ritual_solved)
 
