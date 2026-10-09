@@ -9,6 +9,8 @@ signal mirror_revealed
 signal keypad_ui_requested
 signal keypad_solved
 signal game_won
+## The hot tap was opened with the valve closed: tells the valve to flash.
+signal valve_hint
 
 enum RitualResult { IGNORED, PROGRESS, FAIL, SOLVED }
 

@@ -29,7 +29,11 @@ func interact() -> void:
 	if is_open:
 		Sfx.start_loop(loop_id, "tap", -10.0)
 		if is_hot:
-			GameState.say("hot_tap_on" if GameState.valve_open else "hot_tap_cold")
+			if GameState.valve_open:
+				GameState.say("hot_tap_on")
+			else:
+				GameState.say("hot_tap_cold")
+				GameState.valve_hint.emit()
 		else:
 			GameState.ritual_action("cold_tap", "cold_tap_on")
 	else:

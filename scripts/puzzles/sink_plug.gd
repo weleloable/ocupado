@@ -1,18 +1,20 @@
 class_name SinkPlug
 extends Interactable
 ## Rubber plug of the sink. Part of the secret "flood" ending (see Flood).
-## Local space: the sink mount, +Z into the room.
+## Local space: the sink mount, +Z into the room. It lies at the front of the basin, clear of the
+## taps (whose colliders would otherwise steal the aim) and big enough to point at easily.
 
-const REST_POS := Vector3(0.2, 0.935, 0.16)
-const DRAIN_POS := Vector3(0.0, 0.935, 0.27)
+const REST_POS := Vector3(0.12, 0.94, 0.37)
+const DRAIN_POS := Vector3(0.0, 0.93, 0.27)
 
 
 func _ready() -> void:
 	prompt_text = "Poner el tapón"
 	position = REST_POS
-	add_mesh_cylinder(0.04, 0.014, Vector3.ZERO, Build.mat(Color(0.12, 0.12, 0.14)))
-	add_mesh_cylinder(0.012, 0.025, Vector3(0, 0.014, 0), Build.mat(Color(0.12, 0.12, 0.14)))
-	add_shape(Vector3(0.12, 0.08, 0.12), Vector3(0, 0.02, 0))
+	var rubber := Build.mat(Color(1.0, 0.55, 0.1), 0.35)
+	add_mesh_cylinder(0.06, 0.02, Vector3.ZERO, rubber)
+	add_mesh_cylinder(0.02, 0.04, Vector3(0, 0.03, 0), rubber)
+	add_shape(Vector3(0.2, 0.14, 0.2), Vector3(0, 0.04, 0))
 
 
 func interact() -> void:

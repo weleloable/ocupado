@@ -126,9 +126,9 @@ const NARRATOR := {
 		"El váter no es la salida. Ni lo pienses.",
 	],
 	"hot_tap_cold": [
-		"Sale fría. Fría fría. La llave del agua caliente estará cerrada.",
-		"Agua helada por el grifo caliente. Habrá una válvula roja en alguna tubería, digo yo.",
-		"El grifo caliente escupe agua fría. En este baño todo es mentira.",
+		"Sale fría. La llave del agua caliente está cerrada: mira la válvula roja de la tubería, junto al váter.",
+		"Agua helada. La válvula roja de la tubería del váter (la que parpadea) es la llave del agua caliente.",
+		"El grifo caliente escupe agua fría. Gira la válvula roja de la tubería, junto al váter, y espera.",
 	],
 	"valve_open": [
 		"Las tuberías gorgotean. Algo caliente viene de camino.",

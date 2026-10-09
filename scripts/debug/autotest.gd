@@ -11,6 +11,15 @@ func _ready() -> void:
 	await _wait(1.0)
 	var room := game.room
 
+	# Aiming: the plug and the valve must be reachable with the crosshair from normal positions.
+	await _aim_check(Vector3(-1.0, 0.05, -0.34), 90.0, -48.0, room.plug, "plug (near)")
+	await _aim_check(Vector3(-0.6, 0.05, -0.34), 90.0, -34.0, room.plug, "plug (far)")
+	await _aim_check(Vector3(1.0, 0.05, 0.63), -90.0, -31.0, room.valve, "valve (near)")
+	await _aim_check(Vector3(0.5, 0.05, 0.63), -90.0, -20.0, room.valve, "valve (far)")
+	game.player.global_position = Vector3(0, 0.05, 0.7)
+	game.player.rotation.y = 0.0
+	game.player.camera.rotation.x = 0.0
+
 	_check(not GameState.lights_on, "lights start off")
 	room.door.interact()
 	_check(not GameState.won, "door locked at start")
@@ -123,3 +132,11 @@ func _check(cond: bool, what: String) -> void:
 	print(("  ok   " if cond else "  FAIL ") + what)
 	if not cond:
 		_ok = false
+
+
+func _aim_check(pos: Vector3, yaw: float, pitch: float, target: Interactable, label: String) -> void:
+	game.player.global_position = pos
+	game.player.rotation.y = deg_to_rad(yaw)
+	game.player.camera.rotation.x = deg_to_rad(pitch)
+	await _wait(0.4)
+	_check(game.player.focused == target, "can aim at the " + label)

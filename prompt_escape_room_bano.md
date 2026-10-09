@@ -36,7 +36,7 @@ Hay una cruceta pequeña en el centro. Cuando apuntas a algo interactuable a men
 - **Váter** con cisterna alta y cadena.
 - **Dispensador de papel** metálico, cerrado.
 - **Válvula roja** (rueda con etiqueta "AGUA CALIENTE") en la tubería que sube hasta la cisterna del váter. *(v2)*
-- **Tapón** del lavabo, suelto junto a la pila. *(v2)*
+- **Tapón** naranja y grande del lavabo, en el centro de la pila y lejos de los grifos (sus colliders no deben tapar el tapón al apuntar). *(v2)*
 - **Pintadas** en las paredes (usa `Label3D`): algunas visibles desde el principio y son solo chistes, otras ocultas hasta que se enciende la luz negra.
 - Un rollo de papel vacío, un cartel de "Empleados deben lavarse las manos": decoración interactuable que solo dispara comentarios del narrador.
 - Una **fregona** ("la veterana de 2009"): decoración con comentario del narrador, pero además es uno de los elementos del ritual (puzle 2). *(v2)*
@@ -62,7 +62,7 @@ No hay inventario. Cada puzle revela información o activa algo.
 Reglas: solo cuentan secador, fregona, cadena y grifo frío. El grifo caliente, la válvula, el espejo y el resto de decoración **no** reinician el ritual. Un elemento equivocado reinicia la secuencia (con burla del narrador); si el elemento equivocado es el secador, cuenta como primer paso. Los elementos se pueden usar libremente antes de resolver el puzle 1, pero la secuencia solo cuenta cuando la luz negra está encendida. Al completarla, el dispensador de papel se abre con un ruido y muestra una nota: "_ _ 1 2".
 
 **3. El espejo (mecanismo en cadena).** *(Rediseñado en la v2.)* Ya no basta con abrir el grifo caliente. El espejo solo se empaña y muestra con el dedo "3 3 _ _" si se cumplen **a la vez** estas condiciones:
-1. La **válvula roja** (tubería del váter) está abierta. Si no lo está, el grifo caliente sale frío y el narrador insinúa que hay una válvula. Una pintada oculta lo refuerza: "El caliente no sale si alguien lo cierra".
+1. La **válvula roja** (tubería del váter, rueda grande y brillante con etiqueta "AGUA CALIENTE") está abierta. Si no lo está, el grifo caliente sale frío, el narrador dice explícitamente que mires la válvula roja de la tubería junto al váter, y **la válvula parpadea tres veces** para llamar la atención. Una pintada oculta lo refuerza: "El caliente no sale si alguien lo cierra".
 2. El grifo caliente lleva abierto unos **2,5 s** (primero sale agua fría de la tubería; el narrador avisa cuando llega el agua caliente).
 3. El **grifo frío está cerrado**: con los dos abiertos el agua sale tibia y la tibia no empaña (el narrador lo comenta). Es una trampa natural, porque el ritual deja el grifo frío abierto.
 Después hacen falta unos 5 s de vapor. Si se deja de cumplir cualquiera de las condiciones, el vaho desaparece poco a poco (unos 14 s). Este puzle se puede resolver en cualquier momento, también antes de encender la luz.
@@ -172,3 +172,8 @@ Comentarios del jugador tras probar la v1: "algunos textos de carteles están de
 - Final 2: ¿se encuentra la pintada de la pared oeste? ¿Los 14 s de inundación se hacen largos? (`TIME_TO_FLOOD` en `scripts/puzzles/flood.gd`.)
 - Sonido: no se ha podido escuchar nunca; revisar volúmenes.
 - Carteles: ¿queda alguno descentrado o ilegible desde la distancia normal de juego?
+
+### v2.1: ajustes tras la segunda prueba
+
+- **Válvula poco clara:** ahora es más grande y brilla; el narrador dice con claridad dónde está cuando el grifo caliente sale frío; y la válvula **parpadea** en ese momento (`GameState.valve_hint`).
+- **Tapón inaccesible:** estaba dentro del collider del grifo frío, que "robaba" el apuntado. Se movió al centro de la pila, es más grande y naranja, con un collider generoso. El autotest comprueba con el rayo real que se puede apuntar al tapón y a la válvula desde posiciones normales.
