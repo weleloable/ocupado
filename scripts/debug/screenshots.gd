@@ -30,6 +30,7 @@ func _ready() -> void:
 					"4": GameState.solve_keypad()
 	await get_tree().create_timer(1.5).timeout
 	for pose: Array in POSES:
+		GameState.controls_locked = true
 		game.player.global_position = pose[0]
 		game.player.rotation.y = deg_to_rad(pose[1])
 		game.player.camera.rotation.x = deg_to_rad(pose[2])

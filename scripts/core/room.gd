@@ -15,6 +15,17 @@ var corridor_light: OmniLight3D
 var tube_mat: StandardMaterial3D
 var black_tube_mat: StandardMaterial3D
 
+var door: Door
+var keypad: Keypad
+var breaker: BreakerPanel
+var toilet: DecorItem
+var chain: ToiletChain
+var hot_tap: Tap
+var cold_tap: Tap
+var mirror: MirrorFog
+var dryer: HandDryer
+var dispenser: Dispenser
+
 var mat_tile: StandardMaterial3D
 var mat_paint: StandardMaterial3D
 var mat_floor: StandardMaterial3D
@@ -27,7 +38,10 @@ func _ready() -> void:
 	_build_shell()
 	_build_corridor()
 	_build_lights()
-	_build_test_object()
+	_build_door_wall()
+	_build_east_wall()
+	_build_west_wall()
+	_build_south_wall()
 	GameState.lights_turned_on.connect(_on_lights_on)
 
 
@@ -167,12 +181,82 @@ func _build_lights() -> void:
 	Build.box(self, Vector3(0.6, 0.05, 0.08), Vector3(0, H - 0.03, 0.7), black_tube_mat)
 
 
-func _build_test_object() -> void:
-	var item := DecorItem.new().setup("Tocar el objeto de prueba", "test_object")
-	item.position = Vector3(-1.0, 0.0, 0.0)
-	item.add_mesh_box(Vector3(0.4, 1.0, 0.4), Vector3(0, 0.5, 0), Build.mat(Color(0.8, 0.3, 0.2)))
-	item.add_shape(Vector3(0.4, 1.0, 0.4), Vector3(0, 0.5, 0))
-	add_child(item)
+## North wall: door (with frame) and keypad.
+func _build_door_wall() -> void:
+	var frame_mat := Build.mat(Color(0.32, 0.18, 0.1))
+	Build.box(self, Vector3(0.08, 2.1, 0.06), Vector3(-0.09, 1.05, -1.47), frame_mat)
+	Build.box(self, Vector3(0.08, 2.1, 0.06), Vector3(0.89, 1.05, -1.47), frame_mat)
+	Build.box(self, Vector3(1.06, 0.08, 0.06), Vector3(0.4, 2.09, -1.47), frame_mat)
+	var pivot := Node3D.new()
+	pivot.position = Vector3(-0.05, 0.0, -1.53)
+	add_child(pivot)
+	door = Door.new()
+	door.corridor_light = corridor_light
+	pivot.add_child(door)
+	keypad = Keypad.new()
+	mount("north", -0.45, 1.35).add_child(keypad)
+
+
+## East wall: breaker panel, toilet with high cistern + chain, empty roll.
+func _build_east_wall() -> void:
+	breaker = BreakerPanel.new()
+	mount("east", -0.75, 1.45).add_child(breaker)
+
+	var m := mount("east", 0.75, 0.0)
+	var porcelain := Build.mat(Color(0.93, 0.93, 0.9))
+	toilet = DecorItem.new().setup("Mirar el váter", "toilet")
+	m.add_child(toilet)
+	toilet.add_mesh_cylinder(0.17, 0.4, Vector3(0, 0.2, 0.36), porcelain)
+	toilet.add_mesh_box(Vector3(0.42, 0.06, 0.5), Vector3(0, 0.43, 0.34), Build.mat(Color(0.2, 0.2, 0.22)))
+	toilet.add_mesh_box(Vector3(0.4, 0.45, 0.04), Vector3(0, 0.68, 0.11), Build.mat(Color(0.2, 0.2, 0.22)))
+	toilet.add_shape(Vector3(0.46, 0.5, 0.6), Vector3(0, 0.25, 0.32))
+	# High cistern and pipe (static).
+	var body := StaticBody3D.new()
+	m.add_child(body)
+	Build.box(body, Vector3(0.5, 0.28, 0.2), Vector3(0, 2.15, 0.11), porcelain)
+	Build.cylinder(body, 0.025, 1.6, Vector3(-0.12, 1.25, 0.05), Build.mat(Color(0.6, 0.6, 0.62)))
+	Build.collider(body, Vector3(0.5, 0.28, 0.2), Vector3(0, 2.15, 0.11))
+	chain = ToiletChain.new()
+	chain.position = Vector3(0.17, 0.0, 0.2)
+	m.add_child(chain)
+
+	var r := mount("east", 0.12, 0.8)
+	var roll := DecorItem.new().setup("Coger el rollo de papel", "roll")
+	r.add_child(roll)
+	roll.add_mesh_box(Vector3(0.18, 0.03, 0.06), Vector3(0, 0.07, 0.03), Build.mat(Color(0.6, 0.6, 0.62)))
+	roll.add_mesh_cylinder(0.035, 0.12, Vector3(0, 0.0, 0.06), Build.mat(Color(0.6, 0.45, 0.3)), Vector3(0, 0, PI / 2.0))
+	roll.add_shape(Vector3(0.24, 0.2, 0.14), Vector3(0, 0.02, 0.06))
+
+
+## West wall: sink with hot/cold taps and the mirror.
+func _build_west_wall() -> void:
+	var m := mount("west", -0.2, 0.0)
+	var porcelain := Build.mat(Color(0.93, 0.93, 0.9))
+	var body := StaticBody3D.new()
+	m.add_child(body)
+	Build.box(body, Vector3(0.62, 0.14, 0.48), Vector3(0, 0.85, 0.24), porcelain)
+	Build.box(body, Vector3(0.48, 0.01, 0.34), Vector3(0, 0.925, 0.27), Build.mat(Color(0.55, 0.6, 0.62)))
+	Build.box(body, Vector3(0.16, 0.78, 0.16), Vector3(0, 0.39, 0.14), porcelain)
+	Build.collider(body, Vector3(0.62, 0.92, 0.48), Vector3(0, 0.46, 0.24))
+	hot_tap = Tap.new()
+	hot_tap.is_hot = true
+	hot_tap.position = Vector3(-0.17, 1.0, 0.07)
+	m.add_child(hot_tap)
+	cold_tap = Tap.new()
+	cold_tap.position = Vector3(0.17, 1.0, 0.07)
+	m.add_child(cold_tap)
+	mirror = MirrorFog.new()
+	mirror.hot_tap = hot_tap
+	mirror.position = Vector3(0, 1.62, 0.0)
+	m.add_child(mirror)
+
+
+## South wall: hand dryer, paper dispenser.
+func _build_south_wall() -> void:
+	dryer = HandDryer.new()
+	mount("south", -0.9, 1.3).add_child(dryer)
+	dispenser = Dispenser.new()
+	mount("south", 0.9, 1.35).add_child(dispenser)
 
 
 func _on_lights_on() -> void:
