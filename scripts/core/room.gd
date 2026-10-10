@@ -288,10 +288,10 @@ func _build_decor() -> void:
 	var sign_mount := mount("south", 0.0, 1.95)
 	var sign := DecorItem.new().setup("Leer el cartel", "employees_sign")
 	sign_mount.add_child(sign)
-	sign.add_mesh_box(Vector3(0.62, 0.24, 0.015), Vector3(0, 0, 0.008), Build.mat(Color(0.95, 0.95, 0.9)))
-	Build.label_fit(sign, "LOS EMPLEADOS DEBEN\nLAVARSE LAS MANOS", Vector3(0, 0, 0.017), 0.0,
-			Vector2(0.54, 0.17), Color(0.1, 0.2, 0.55))
-	sign.add_shape(Vector3(0.64, 0.26, 0.05), Vector3(0, 0, 0.02))
+	sign.add_mesh_box(Vector3(0.9, 0.44, 0.015), Vector3(0, 0, 0.008), Build.mat(Color(0.96, 0.96, 0.92)))
+	Build.label_fit(sign, "LOS EMPLEADOS\nDEBEN LAVARSE\nLAS MANOS", Vector3(0, 0, 0.0155), 0.0,
+			Vector2(0.8, 0.36), Color(0.05, 0.12, 0.45))
+	sign.add_shape(Vector3(0.92, 0.46, 0.05), Vector3(0, 0, 0.02))
 
 
 ## North-east corner: the red steam pipe with the lever valve.

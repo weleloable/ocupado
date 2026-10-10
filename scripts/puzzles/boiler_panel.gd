@@ -12,7 +12,7 @@ func _ready() -> void:
 	prompt_text = "Revisar la caldera"
 	add_mesh_box(Vector3(0.44, 0.54, 0.1), Vector3(0, 0, 0.05), Build.mat(Color(0.42, 0.46, 0.45)))
 	add_mesh_box(Vector3(0.4, 0.5, 0.012), Vector3(0, 0, 0.104), Build.mat(Color(0.33, 0.37, 0.36)))
-	Build.label_fit(self, "CALDERA", Vector3(0, 0.215, 0.112), 0.0, Vector2(0.3, 0.05), Color(0.95, 0.9, 0.7))
+	Build.label_fit(self, "CALDERA", Vector3(0, 0.215, 0.112), 0.0, Vector2(0.38, 0.07), Color(0.95, 0.9, 0.7))
 	# Screen and status lamp.
 	add_mesh_box(Vector3(0.32, 0.1, 0.01), Vector3(0, 0.12, 0.112), Build.mat(Color(0.03, 0.06, 0.04)))
 	_screen_label = Build.label_fit(self, "-  -  -  -", Vector3(0, 0.12, 0.12), 0.0, Vector2(0.26, 0.07), Color(0.2, 0.55, 0.3))

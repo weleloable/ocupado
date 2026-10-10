@@ -252,3 +252,12 @@ Petición del jugador: añadir "Tuberías de la caldera", "Los posavasos" y "El 
 - ¿Es fácil encontrar los cuatro posavasos? ¿Se entiende que el tablón de corcho es donde se ordena la mesa?
 - ¿Es lógico que el acertijo del cuñado no dé cifra? Si prefieres que dé una, dilo y cambiamos el reparto.
 - Se ve poco de lejos el texto "LA CAÑA PERFECTA" de los posavasos, pero solo importa cuando los lees de cerca.
+
+### v4.1: textos que "se bugean" (parpadeo y trozos rotos)
+
+Comentario del jugador, con captura: el cartel "Los empleados deben lavarse las manos" y otros textos del escenario se ven rotos y no se leen.
+
+- **Causa 1, pelea de profundidad (z-fighting):** el texto estaba a solo 1,5 mm de la superficie en la que está escrito y la cámara tenía el plano lejano en 4000 m, así que no había precisión de profundidad para separarlos. Arreglo: la cámara ve de 0,05 a 30 m (`Player`), y `Build.label` separa todo texto 4 mm de su superficie, hacia el lado al que mira (`Build.LABEL_LIFT`).
+- **Causa 2, texto demasiado pequeño:** el cartel de los empleados es ahora de 0,9 x 0,44 m con el texto en tres líneas ("LOS EMPLEADOS / DEBEN LAVARSE / LAS MANOS") en azul oscuro sobre blanco. También se agrandaron "CÓDIGO", "PULSE", "PAPEL" y "CALDERA", y se quitó el texto "LA CAÑA PERFECTA" de los posavasos porque no se podía leer.
+- **Regla nueva para cualquier texto 3D que se añada:** debe llevar al menos ~0,05 m de alto útil y colocarse con `Build.label_fit`; los textos decorativos que no se puedan leer a 2 m se quitan.
+- Comprobación: `-- --shots=<carpeta> --closeups --lights` incluye las capturas `c_sign_side` y `c_sign_side2`, hechas desde un ángulo lateral.

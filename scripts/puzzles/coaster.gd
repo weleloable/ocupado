@@ -13,7 +13,6 @@ func _ready() -> void:
 	var rim := Build.mat(Color(0.93, 0.9, 0.8))
 	add_mesh_cylinder(0.1, 0.012, Vector3(0, 0, 0.006), rim, Vector3(PI / 2.0, 0, 0))
 	add_mesh_cylinder(0.075, 0.014, Vector3(0, 0, 0.007), Build.mat(COLORS[index % COLORS.size()]), Vector3(PI / 2.0, 0, 0))
-	Build.label_fit(self, "LA CAÑA\nPERFECTA", Vector3(0, 0, 0.016), 0.0, Vector2(0.12, 0.07), Color(0.98, 0.95, 0.85))
 	# Gum.
 	add_mesh_box(Vector3(0.03, 0.03, 0.01), Vector3(0.09, 0.08, 0.005), Build.mat(Color(0.9, 0.5, 0.7)))
 	add_shape(Vector3(0.24, 0.24, 0.1), Vector3(0, 0, 0.04))

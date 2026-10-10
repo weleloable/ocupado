@@ -4,6 +4,9 @@ extends RefCounted
 
 static var _mat_cache: Dictionary = {}
 
+## How far (m) a label floats above the surface it is written on.
+const LABEL_LIFT := 0.004
+
 
 ## Shared (cached) flat-color material. Do not mutate the result.
 static func mat(color: Color, emission: float = 0.0, unshaded: bool = false) -> StandardMaterial3D:
@@ -144,7 +147,8 @@ static func label(parent: Node, text: String, pos: Vector3, rot_y: float, font_s
 		color: Color, pixel_size: float = 0.004, outline: int = 0) -> Label3D:
 	var l := Label3D.new()
 	l.text = text
-	l.position = pos
+	# 4 mm clear of the surface, on the side the text faces, so it never z-fights with it.
+	l.position = pos + Vector3(0, 0, LABEL_LIFT if cos(rot_y) >= 0.0 else -LABEL_LIFT)
 	l.rotation.y = rot_y
 	l.font_size = font_size
 	l.pixel_size = pixel_size
