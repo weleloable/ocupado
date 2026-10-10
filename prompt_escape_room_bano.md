@@ -65,7 +65,7 @@ Reglas: las frases ya reveladas **se quedan** aunque falle la secuencia (así se
 **La fregona tiene un único texto** del narrador ("Lleva aquí desde 2009. Es la que manda."), siempre el mismo, porque la pista "la veterana de 2009" remite exactamente a esa frase. Si se toca en el paso correcto, tras esa frase el narrador lee la pista del paso siguiente.
 
 **3. El espejo (mecanismo en cadena).** *(Rediseñado en la v2; v3: el vapor está en una esquina.)* Ya no basta con abrir el grifo caliente. El espejo solo se empaña y muestra con el dedo una cifra ("3 _ _ _") si se cumplen **a la vez** estas condiciones:
-1. El **vapor está abierto**. Hay una **gran tubería roja de vapor** que va del suelo al techo en la **esquina noreste** (a la derecha de la puerta, visible desde el principio), con bandas amarillas, un **manómetro** y un tramo horizontal pegado a la pared norte con una **palanca amarilla** (no una rueda) y un cartel "VAPOR / AGUA CALIENTE". Palanca cruzada = cerrado; palanca a lo largo de la tubería = abierto. Al abrirla: la aguja del manómetro sube, suena un siseo y salen chorros de vapor. Si el vapor está cerrado, el grifo caliente sale frío, el narrador dice explícitamente que abras la llave de la tubería roja de la esquina junto a la puerta, y **la palanca parpadea tres veces**. Una pintada oculta lo refuerza: "Sin vapor no hay agua caliente".
+1. El **vapor está abierto**. Hay una **gran tubería roja de vapor** que va del suelo al techo en la **esquina noreste** (a la derecha de la puerta, visible desde el principio), con bandas amarillas, un **manómetro** y un tramo horizontal pegado a la pared norte con una **palanca amarilla** (no una rueda) y un cartel "VAPOR / AGUA CALIENTE". Palanca cruzada = cerrado; palanca a lo largo de la tubería = abierto. Al abrirla: la aguja del manómetro sube, suena un siseo y salen chorros de vapor. Si el vapor está cerrado, el grifo caliente sale frío, el narrador dice explícitamente que abras la llave de la tubería roja de la esquina junto a la puerta, y **la palanca parpadea tres veces**.
 2. El grifo caliente lleva abierto unos **2,5 s** (primero sale agua fría de la tubería; el narrador avisa cuando llega el agua caliente).
 3. El **grifo frío está cerrado**: con los dos abiertos el agua sale tibia y la tibia no empaña (el narrador lo comenta). Es una trampa natural, porque el ritual deja el grifo frío abierto.
 Después hacen falta unos 5 s de vapor. Si se deja de cumplir cualquiera de las condiciones, el vaho desaparece poco a poco (unos 14 s). Este puzle se puede resolver en cualquier momento, también antes de encender la luz.
@@ -99,7 +99,7 @@ Además, el móvil muestra siempre arriba la línea "CÓDIGO 3 _ _ 2" con las ci
 
 **Final 2 (secreto): "Que lo limpie el bar".** *(Nuevo en la v2.)* No hace falta resolver ningún puzle. Si el jugador **pone el tapón** en el lavabo y deja **abiertos los dos grifos** (caliente y frío) durante unos 14 s, el lavabo rebosa, el agua sube por la sala (animación visible de agua translúcida hasta ~1 m), la puerta revienta y aparece la pantalla de victoria con otro título ("¡DILUVIO!"), otro subtítulo y otros veredictos de la cerveza. Reglas:
 - Si el jugador cierra un grifo o quita el tapón, el agua baja poco a poco (no se pierde nada ni hay estado sin solución).
-- Las pistas están ocultas: una pintada de luz negra ("¿Prisa? Tapa el lavabo, abre todo y espera. El bar ya limpiará") y, tras resolver el teclado, una cuarta pista del móvil.
+- La pista es discreta: un **cartel amarillo de aviso junto al espejo** con una fregona en un cubo y el texto "NO INUNDAR. NO ERES TÚ QUIEN LIMPIA EL ESTROPICIO" (no dice cómo se hace), y, tras resolver el teclado, una cuarta pista del móvil.
 - El juego guarda en `user://endings.cfg` los finales descubiertos y muestra "Finales descubiertos: X/2" en el menú y en la pantalla final.
 
 ## La cerveza (puntuación)
@@ -261,3 +261,12 @@ Comentario del jugador, con captura: el cartel "Los empleados deben lavarse las 
 - **Causa 2, texto demasiado pequeño:** el cartel de los empleados es ahora de 0,9 x 0,44 m con el texto en tres líneas ("LOS EMPLEADOS / DEBEN LAVARSE / LAS MANOS") en azul oscuro sobre blanco. También se agrandaron "CÓDIGO", "PULSE", "PAPEL" y "CALDERA", y se quitó el texto "LA CAÑA PERFECTA" de los posavasos porque no se podía leer.
 - **Regla nueva para cualquier texto 3D que se añada:** debe llevar al menos ~0,05 m de alto útil y colocarse con `Build.label_fit`; los textos decorativos que no se puedan leer a 2 m se quitan.
 - Comprobación: `-- --shots=<carpeta> --closeups --lights` incluye las capturas `c_sign_side` y `c_sign_side2`, hechas desde un ángulo lateral.
+
+### v4.2: pintadas más integradas y menos recargadas
+
+Comentario del jugador: "los textos de pista son demasiado claros ('sin vapor no hay agua caliente', '¿prisa? tapa el lavabo…'), las paredes están muy recargadas, y el texto amarillo/rosa/cian de relleno no tiene sentido en un baño: que sea vaho, suciedad o tinta".
+
+1. **Estilos de escritura** (`Room.Ink`): **tinta de rotulador** (negro, rojo, azul; siempre visible), **mugre** marrón (solo con la luz negra) y **escritura con el dedo en el vaho** (blanco azulado translúcido) para todas las frases del ritual. Se acabaron los colores fluorescentes. Cada texto se inclina 2-3° (siempre igual para el mismo texto) para que parezca escrito a mano.
+2. **Menos mensajes:** se quitan "Sin vapor no hay agua caliente", "¿Prisa? Tapa el lavabo…", "La llave está en tu corazón" y "El papel no se gana, se merece". Quedan tres de rotulador ("Aquí se viene a llorar", "Si lees esto, estás en un baño", "Paco te quiero (no)"), uno de mugre ("Esto no se limpia desde 2009", que apoya la pista de la fregona) y las frases del ritual.
+3. **Cartel de aviso junto al espejo:** placa amarilla con el pictograma de una fregona en un cubo y "NO INUNDAR. NO ERES TÚ QUIEN LIMPIA EL ESTROPICIO". Es interactuable (el narrador comenta). Va por encima de la moldura de los azulejos (1,4 m) para que no se corte.
+4. El narrador dice ahora que las frases del ritual aparecen "escritas en el vaho".

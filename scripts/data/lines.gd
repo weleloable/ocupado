@@ -75,16 +75,16 @@ const NARRATOR := {
 		"Error de protocolo. El espíritu del bar está decepcionado.",
 	],
 	"ritual_clue_1": [
-		"Bien. Aparece en la pared de encima una frase con luz negra: «2. LA VETERANA DE 2009».",
+		"Bien. En la pared de encima aparece escrito en el vaho: «2. LA VETERANA DE 2009».",
 	],
 	"ritual_clue_2": [
-		"Sigue el hilo. Junto a la fregona aparece otra frase: «3. EL RÍO QUE ARRASTRA».",
+		"Sigue el hilo. Junto a la fregona se empaña un nuevo recado: «3. EL RÍO QUE ARRASTRA».",
 	],
 	"ritual_clue_3": [
-		"Cada acierto deja un recado. Junto al váter se enciende: «4. LO FRÍO QUE MOJA».",
+		"Cada acierto deja un recado. Junto al váter alguien escribe con el dedo: «4. LO FRÍO QUE MOJA».",
 	],
 	"ritual_clue_4": [
-		"Casi. Encima del espejo aparece lo último: «5. OTRA VEZ EL VIENTO».",
+		"Casi. Encima del espejo, en el vaho, lo último: «5. OTRA VEZ EL VIENTO».",
 	],
 	"ritual_solved": [
 		"¡Clonc! El dispensador de papel se ha abierto. El ritual funciona. Nadie sabe por qué.",
@@ -220,6 +220,10 @@ const NARRATOR := {
 	],
 	"digit_found": [
 		"Cifra apuntada en el móvil.",
+	],
+	"flood_sign": [
+		"Un cartel de aviso: no inundar. Y no eres tú quien limpia. Quien lo puso sabía perfectamente lo que hacía.",
+		"NO INUNDAR, dice, con una fregona en un cubo. Qué cosa más rara de avisar en un baño donde no pasa nada.",
 	],
 	"test_object": [
 		"Esto es un objeto de prueba. Muy interactivo. Muy de prueba.",

@@ -57,6 +57,7 @@ func _ready() -> void:
 	_build_decor()
 	_build_trial_props()
 	_build_graffiti()
+	_build_flood_sign()
 	_build_flood()
 	GameState.lights_turned_on.connect(_on_lights_on)
 
@@ -319,45 +320,92 @@ func _build_trial_props() -> void:
 	mount("north", -1.3, 1.05).add_child(board)
 
 
+enum Ink { BLACK, RED, BLUE, GRIME, STEAM }
+
+
+## [text color, outline color, outline px] of each way of writing on the walls: marker ink that is
+## always there, grime that only shows up under the black light, and finger-writing in the steam.
+func _ink_style(ink: Ink) -> Array:
+	match ink:
+		Ink.BLACK:
+			return [Color(0.06, 0.06, 0.08, 0.9), Color(0, 0, 0, 0), 0]
+		Ink.RED:
+			return [Color(0.5, 0.06, 0.06, 0.9), Color(0, 0, 0, 0), 0]
+		Ink.BLUE:
+			return [Color(0.1, 0.18, 0.45, 0.9), Color(0, 0, 0, 0), 0]
+		Ink.GRIME:
+			return [Color(0.36, 0.26, 0.1, 0.92), Color(0.2, 0.13, 0.04, 0.45), 3]
+		_:
+			return [Color(0.92, 0.97, 1.0, 0.72), Color(0.7, 0.86, 1.0, 0.28), 4]
+
+
 func _build_graffiti() -> void:
-	var marker := Color(0.08, 0.08, 0.1)
-	var red := Color(0.6, 0.08, 0.08)
-	var blue := Color(0.1, 0.2, 0.6)
-	_graffiti("north", 1.35, 1.75, "AQUÍ SE VIENE\nA LLORAR", Vector2(0.7, 0.26), marker, false)
-	_graffiti("north", 1.4, 2.25, "LA LLAVE ESTÁ EN TU CORAZÓN\n(es broma, es un teclado)", Vector2(0.9, 0.2), blue, false)
-	_graffiti("south", -0.9, 1.85, "SI LEES ESTO,\nESTÁS EN UN BAÑO", Vector2(0.85, 0.3), red, false)
-	_graffiti("east", 0.3, 1.72, "PACO\nTE QUIERO\n(NO)", Vector2(0.55, 0.4), red, false)
-	# Hidden until the black light turns on.
-	var neon := Color(0.75, 1.0, 0.2)
-	var pink := Color(1.0, 0.35, 0.85)
-	var cyan := Color(0.3, 0.95, 1.0)
-	# The ritual is a chain: the first line is visible with the black light, and every correct step
-	# reveals the next one next to the object that was just used (see _on_ritual_progressed).
-	_graffiti("north", -1.28, 1.86, "EL RITUAL DEL\nPARROQUIANO\n1. EL VIENTO\nQUE SECA", Vector2(1.0, 0.7), neon, true)
+	# Marker ink, always visible.
+	_graffiti("north", 1.35, 1.75, "AQUÍ SE VIENE\nA LLORAR", Vector2(0.7, 0.26), Ink.BLACK)
+	_graffiti("south", -0.9, 1.85, "SI LEES ESTO,\nESTÁS EN UN BAÑO", Vector2(0.85, 0.3), Ink.RED)
+	_graffiti("east", 0.3, 1.97, "PACO\nTE QUIERO\n(NO)", Vector2(0.55, 0.4), Ink.RED)
+	# Only visible once the black light is on.
+	_graffiti("east", -0.75, 2.3, "ESTO NO SE LIMPIA\nDESDE 2009", Vector2(0.75, 0.2), Ink.GRIME, true)
+	# The ritual is a chain written with a finger in the steam: the first line shows with the black
+	# light, and every correct step reveals the next one next to the object that was just used
+	# (see _on_ritual_progressed).
+	_graffiti("north", -1.28, 1.86, "EL RITUAL DEL\nPARROQUIANO\n1. EL VIENTO\nQUE SECA", Vector2(1.0, 0.7), Ink.STEAM, true)
 	ritual_clues = [
-		_graffiti("south", -0.9, 2.2, "2. LA VETERANA\nDE 2009", Vector2(0.9, 0.34), neon, false, true),
-		_graffiti("west", 1.0, 1.75, "3. EL RÍO\nQUE ARRASTRA", Vector2(0.9, 0.34), neon, false, true),
-		_graffiti("east", 1.05, 1.75, "4. LO FRÍO\nQUE MOJA", Vector2(0.8, 0.34), neon, false, true),
-		_graffiti("west", -0.2, 2.25, "5. OTRA VEZ\nEL VIENTO", Vector2(0.9, 0.34), neon, false, true),
+		_graffiti("south", -0.9, 2.2, "2. LA VETERANA\nDE 2009", Vector2(0.9, 0.34), Ink.STEAM, false, true),
+		_graffiti("west", 1.0, 1.75, "3. EL RÍO\nQUE ARRASTRA", Vector2(0.9, 0.34), Ink.STEAM, false, true),
+		_graffiti("east", 1.05, 1.75, "4. LO FRÍO\nQUE MOJA", Vector2(0.8, 0.34), Ink.STEAM, false, true),
+		_graffiti("west", -0.2, 2.25, "5. OTRA VEZ\nEL VIENTO", Vector2(0.9, 0.34), Ink.STEAM, false, true),
 	]
-	_graffiti("west", 0.95, 2.2, "SIN VAPOR NO HAY\nAGUA CALIENTE", Vector2(1.0, 0.3), pink, true)
-	_graffiti("south", 0.9, 1.88, "EL PAPEL NO SE GANA,\nSE MERECE", Vector2(0.8, 0.2), pink, true)
-	_graffiti("east", -0.75, 2.3, "ESTO NO SE LIMPIA\nDESDE 2009", Vector2(0.75, 0.2), neon, true)
-	_graffiti("west", -1.0, 1.9, "¿PRISA?\nTAPA EL LAVABO,\nABRE TODO Y ESPERA.\nEL BAR YA LIMPIARÁ", Vector2(0.8, 0.5), cyan, true)
 	GameState.ritual_progressed.connect(_on_ritual_progressed)
 
 
-## `chain_clue` labels start hidden and are shown by the ritual, not by the black light.
-func _graffiti(wall: String, along: float, y: float, text: String, max_size: Vector2, color: Color,
-		hidden: bool, chain_clue: bool = false) -> Label3D:
+## `hidden` labels appear with the black light; `chain_clue` labels are shown by the ritual instead.
+## Each text is tilted a couple of degrees (always the same for the same text) so it looks handwritten.
+func _graffiti(wall: String, along: float, y: float, text: String, max_size: Vector2, ink: Ink,
+		hidden: bool = false, chain_clue: bool = false) -> Label3D:
 	var m := mount(wall, along, y)
-	var l := Build.label_fit(m, text, Vector3(0, 0, 0.012), 0.0, max_size, color, 5 if (hidden or chain_clue) else 0)
+	var style := _ink_style(ink)
+	var l := Build.label_fit(m, text, Vector3(0, 0, 0.012), 0.0, max_size, style[0], style[2])
+	l.outline_modulate = style[1]
+	var rng := RandomNumberGenerator.new()
+	rng.seed = text.hash()
+	l.rotation.z = deg_to_rad(rng.randf_range(-2.5, 2.5))
+	l.set_meta("base_alpha", style[0].a)
 	if hidden or chain_clue:
-		l.outline_modulate = Color(color.r * 0.3, color.g * 0.3, color.b * 0.3)
 		l.visible = false
 	if hidden:
 		hidden_labels.append(l)
 	return l
+
+
+## Warning sign next to the mirror: "no flooding", with a mop in a bucket. It is the discreet clue
+## of the secret flood ending (plug in the sink + both taps open).
+func _build_flood_sign() -> void:
+	var sign := DecorItem.new().setup("Leer el aviso", "flood_sign")
+	mount("west", -0.82, 1.78).add_child(sign)
+	var black := Build.mat(Color(0.05, 0.05, 0.06))
+	sign.add_mesh_box(Vector3(0.42, 0.62, 0.012), Vector3(0, 0, 0.006), black)
+	sign.add_mesh_box(Vector3(0.39, 0.59, 0.012), Vector3(0, 0, 0.008), Build.mat(Color(0.95, 0.8, 0.12)))
+	# Pictogram: a mop in a bucket.
+	var bucket_mesh := CylinderMesh.new()
+	bucket_mesh.top_radius = 0.07
+	bucket_mesh.bottom_radius = 0.05
+	bucket_mesh.height = 0.1
+	bucket_mesh.radial_segments = 12
+	bucket_mesh.rings = 1
+	var bucket := MeshInstance3D.new()
+	bucket.mesh = bucket_mesh
+	bucket.material_override = black
+	bucket.position = Vector3(0.02, 0.02, 0.03)
+	sign.add_child(bucket)
+	sign.track_mesh(bucket)
+	sign.add_mesh_cylinder(0.008, 0.2, Vector3(-0.03, 0.13, 0.03), black, Vector3(0, 0, 0.42))
+	sign.add_mesh_box(Vector3(0.11, 0.045, 0.01), Vector3(0.0, 0.075, 0.032), black, Vector3(0, 0, 0.2))
+	for dx in [-0.05, 0.0, 0.05]:
+		sign.add_mesh_box(Vector3(0.025, 0.006, 0.004), Vector3(0.02 + dx, -0.05, 0.03), black)
+	Build.label_fit(sign, "NO INUNDAR.\nNO ERES TÚ QUIEN\nLIMPIA EL ESTROPICIO", Vector3(0, -0.185, 0.0145), 0.0,
+			Vector2(0.36, 0.2), Color(0.05, 0.05, 0.06))
+	sign.add_shape(Vector3(0.44, 0.64, 0.06), Vector3(0, 0, 0.03))
 
 
 ## Step `step` of the ritual was just done: show the clue for the next one.
@@ -366,7 +414,7 @@ func _on_ritual_progressed(step: int) -> void:
 		var clue := ritual_clues[step - 1]
 		clue.visible = true
 		clue.modulate.a = 0.0
-		create_tween().tween_property(clue, "modulate:a", 1.0, 0.8)
+		create_tween().tween_property(clue, "modulate:a", float(clue.get_meta("base_alpha", 1.0)), 0.8)
 
 
 ## Flood controller of the secret ending (needs the taps, the door and the sink mount).
