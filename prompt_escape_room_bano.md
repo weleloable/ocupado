@@ -60,17 +60,40 @@ No hay inventario. Cada puzle revela información o activa algo.
 | 4 | **grifo frío** (cuenta al *abrirlo*) | "4. LO FRÍO QUE MOJA" | pared este, junto al váter |
 | 5 | **secador** otra vez | "5. OTRA VEZ EL VIENTO" | pared oeste, encima del espejo |
 
-Reglas: las frases ya reveladas **se quedan** aunque falle la secuencia (así se pueden releer). Solo cuentan secador, fregona, cadena y grifo frío; el grifo caliente, la palanca de vapor, el espejo y el resto de decoración **no** reinician el ritual. Un elemento equivocado reinicia la secuencia (con burla del narrador); si el equivocado es el secador, cuenta como primer paso. La secuencia solo cuenta cuando la luz negra está encendida. Al completarla, el dispensador de papel se abre con un ruido y muestra una nota: "_ _ 1 2".
+Reglas: las frases ya reveladas **se quedan** aunque falle la secuencia (así se pueden releer). Solo cuentan secador, fregona, cadena y grifo frío; el grifo caliente, la palanca de vapor, el espejo y el resto de decoración **no** reinician el ritual. Un elemento equivocado reinicia la secuencia (con burla del narrador); si el equivocado es el secador, cuenta como primer paso. La secuencia solo cuenta cuando la luz negra está encendida. Al completarla, el dispensador de papel se abre con un ruido y muestra una nota con **una sola cifra**: "_ _ 1 _".
 
 **La fregona tiene un único texto** del narrador ("Lleva aquí desde 2009. Es la que manda."), siempre el mismo, porque la pista "la veterana de 2009" remite exactamente a esa frase. Si se toca en el paso correcto, tras esa frase el narrador lee la pista del paso siguiente.
 
-**3. El espejo (mecanismo en cadena).** *(Rediseñado en la v2; v3: el vapor está en una esquina.)* Ya no basta con abrir el grifo caliente. El espejo solo se empaña y muestra con el dedo "3 3 _ _" si se cumplen **a la vez** estas condiciones:
+**3. El espejo (mecanismo en cadena).** *(Rediseñado en la v2; v3: el vapor está en una esquina.)* Ya no basta con abrir el grifo caliente. El espejo solo se empaña y muestra con el dedo una cifra ("3 _ _ _") si se cumplen **a la vez** estas condiciones:
 1. El **vapor está abierto**. Hay una **gran tubería roja de vapor** que va del suelo al techo en la **esquina noreste** (a la derecha de la puerta, visible desde el principio), con bandas amarillas, un **manómetro** y un tramo horizontal pegado a la pared norte con una **palanca amarilla** (no una rueda) y un cartel "VAPOR / AGUA CALIENTE". Palanca cruzada = cerrado; palanca a lo largo de la tubería = abierto. Al abrirla: la aguja del manómetro sube, suena un siseo y salen chorros de vapor. Si el vapor está cerrado, el grifo caliente sale frío, el narrador dice explícitamente que abras la llave de la tubería roja de la esquina junto a la puerta, y **la palanca parpadea tres veces**. Una pintada oculta lo refuerza: "Sin vapor no hay agua caliente".
 2. El grifo caliente lleva abierto unos **2,5 s** (primero sale agua fría de la tubería; el narrador avisa cuando llega el agua caliente).
 3. El **grifo frío está cerrado**: con los dos abiertos el agua sale tibia y la tibia no empaña (el narrador lo comenta). Es una trampa natural, porque el ritual deja el grifo frío abierto.
 Después hacen falta unos 5 s de vapor. Si se deja de cumplir cualquiera de las condiciones, el vaho desaparece poco a poco (unos 14 s). Este puzle se puede resolver en cualquier momento, también antes de encender la luz.
 
-**4. Teclado de la puerta (código).** Al interactuar se abre una interfaz 2D con teclado numérico (ratón visible, Esc para cerrar). Código correcto: **3312**. Un código incorrecto da un pitido de error y un comentario del narrador.
+**4. Tuberías de la caldera (puzle, panel 2D).** *(Nuevo en la v4.)* En la pared este, junto al cuadro eléctrico, hay un **cuadro de la caldera** (cartel "CALDERA", pantalla apagada con "- - - -" y un esquema de tuberías cortadas). Al interactuar se abre un panel 2D de **5 x 4 piezas de tubería** (rectas, curvas y T). Clic izquierdo gira la pieza 90° (clic derecho, al revés). El vapor entra por la izquierda (fila 2) y tiene que salir por la derecha (fila 3), pasando solo por aberturas que encajen; las piezas alcanzadas por el vapor se iluminan en azul. Al conectarlo, la caldera se enciende y su pantalla muestra una cifra ("_ 3 _ _"). Se puede resolver en cualquier momento. La lógica está en `PipeGrid` (pura, con test: el estado inicial no está resuelto y exige al menos 6 giros).
+
+**5. Los posavasos (acertijo de deducción).** *(Nuevo en la v4.)* "Mientras estabas en el baño, alguien se bebió tu caña." Hay **cuatro posavasos pegados con chicle** repartidos por la sala (pared sur junto al secador, pared este cerca de la esquina sur, pared oeste cerca de la esquina norte y pared oeste junto al lavabo). Al leer cada uno, el narrador dice una frase sobre dónde se sienta un amigo (asientos 1 a 4, de izquierda a derecha):
+1. PACO se sienta en un extremo de la barra.
+2. MARTA está justo a la izquierda de LUCÍA.
+3. JAVI no está al lado de PACO.
+4. LUCÍA está más a la derecha que JAVI.
+Un **tablón de corcho "MESA 7"** en la pared de la puerta (a la izquierda) abre un panel 2D con las frases leídas (las no leídas salen como "???") y cuatro asientos donde se elige el amigo con clic. "Comprobar" avisa si faltan posavasos por leer, y si no cuadra marca en verde/rojo qué pistas se cumplen. **Solución única** (comprobada por fuerza bruta en un test): Javi, Marta, Lucía, Paco. El culpable es quien está en el asiento 2: **Marta**, y de ahí sale la cifra "_ _ _ 2". `SeatingPuzzle` contiene la lógica.
+
+**Extra. El acertijo del cuñado (en el móvil).** *(Nuevo en la v4.)* El móvil (H) tiene ahora dos botones abajo: "Pista (+1 °C)" y "Acertijo (Javi)". Javi, el cuñado, plantea tres acertijos clásicos con tres respuestas cada uno (el plátano, la pera, la oscuridad). **Acertar baja la cerveza 1 °C; fallar la sube 1 °C** (temperatura mínima 2 °C). **No revela ninguna cifra**: es la prueba extra, con recompensa en la puntuación. Los acertijos están en `scripts/data/riddles.gd`.
+
+**El código del teclado: una cifra por prueba.** *(Cambiado en la v4.)* El código sigue siendo **3312**, pero ahora **cada prueba revela UNA sola cifra, en su posición** (las demás van con guiones). Hay cuatro pruebas con cifra y una extra sin ella:
+
+| Prueba | Cifra | Posición | Dónde se ve |
+|---|---|---|---|
+| Espejo | 3 | 1ª | "3 _ _ _" en el espejo empañado |
+| Tuberías de la caldera | 3 | 2ª | "_ 3 _ _" en la pantalla de la caldera |
+| Ritual (dispensador de papel) | 1 | 3ª | "_ _ 1 _" en la nota del dispensador |
+| Posavasos (mesa 7) | 2 | 4ª | "_ _ _ 2" en el papel del tablón |
+| Acertijo del cuñado | (ninguna) | (ninguna) | bonus: baja o sube la cerveza |
+
+Además, el móvil muestra siempre arriba la línea "CÓDIGO 3 _ _ 2" con las cifras ya encontradas, para no tener que recordarlas. El cuadro eléctrico (puzle 1) solo da la luz.
+
+**6. Teclado de la puerta (código).** Al interactuar se abre una interfaz 2D con teclado numérico (ratón visible, Esc para cerrar). Código correcto: **3312**. Un código incorrecto da un pitido de error y un comentario del narrador.
 
 **Final 1 (chiste): "Tirar, que no empujar".** Al introducir el código correcto, el teclado se pone verde... y la puerta sigue sin abrir. El cartel de la puerta, que hasta ahora estaba girado o medio tapado, dice "TIRAR". El narrador comenta que el teclado nunca estuvo conectado a nada. El jugador interactúa con la puerta, se abre, y aparece la pantalla de victoria.
 
@@ -130,7 +153,7 @@ Sonidos añadidos en la v2/v3: "clunk" y "rattle" para la palanca y el tapón, "
 - Registra las acciones de entrada por código con `InputMap` al arrancar, para no depender de editar `project.godot` a mano.
 - Arquitectura sencilla: un autoload `GameState` (progreso de puzles, tiempo, temperatura, señales), una clase base `Interactable` con método `interact()` y texto de prompt, y un script por puzle.
 - Jugador: `CharacterBody3D` con `RayCast3D` para interactuar. Colisiones en paredes y muebles para que no se pueda salir de la sala.
-- **Teclas de depuración:** F1-F4 resuelven al instante cada puzle. Las necesito para probar el final sin jugar todo.
+- **Teclas de depuración:** F1 luz, F2 ritual, F3 espejo, F4 teclado, F5 tuberías y F6 posavasos resuelven al instante cada prueba. Las necesito para probar el final sin jugar todo.
 - **Herramientas de prueba (v2):** `godot --headless --path . -- --autotest` juega la partida entera con los objetos reales y debe acabar en PASS; `-- --autotest-flood` prueba el final secreto; `--script res://tests/test_lights_out.gd` comprueba el cuadro eléctrico. `-- --shots=<carpeta> [--closeups] [--lights] [--solve=1234] [--clues] [--steam] [--flood] [--ui]` guarda capturas de pantalla para revisar carteles y colocaciones. Los modos de prueba nunca modifican los finales guardados del jugador.
 
 ## Cómo trabajar
@@ -149,7 +172,7 @@ Haz un commit de git al final de cada fase.
 ## Hecho significa
 
 - El juego arranca sin errores en consola.
-- Se puede completar de principio a fin jugando normal, y también usando F1-F4. Los dos finales son alcanzables.
+- Se puede completar de principio a fin jugando normal, y también usando F1-F6. Los dos finales son alcanzables.
 - Ningún puzle puede quedar en un estado sin solución.
 - Ningún texto 3D se sale de su cartel, botón o panel (se revisa con las capturas `--closeups`).
 - Hay menú, narrador, pistas, sonido y pantalla final con la temperatura de la cerveza.
@@ -211,3 +234,21 @@ Comentario del jugador: "los textos de las paredes se leen mal cuando estás de 
 - Solución: todos los `Label3D` (`Build.label`) usan filtro lineal con mipmaps y anisotrópico (`textures/default_filters/anisotropic_filtering_level=4` en `project.godot`), mezcla de alfa suave, tipografía a doble resolución (`font_size` 96 en `label_fit`) y una variación **en negrita** de la fuente por defecto (`Build.label_font()`). El suelo, las paredes y el resto siguen siendo pixel art con filtro `nearest`.
 - Las pistas del ritual y las pintadas importantes se parten en líneas más cortas para poder dibujar letras más grandes en el mismo hueco.
 - Comprobación: `-- --shots=<carpeta> --lights --clues --oblique` genera capturas en ángulo con cuatro modos de texto, y `tools/compare_crops.gd` apila recortes ampliados para compararlos.
+
+### v4: tres minijuegos nuevos y una cifra por prueba
+
+Petición del jugador: añadir "Tuberías de la caldera", "Los posavasos" y "El cuñado por el móvil", **sin añadir más números** al código de 4 cifras (3312): que **cada prueba revele un solo número** y haya 4 pruebas con número.
+
+1. **Tuberías de la caldera** (puzle 2D, `PipeGrid`, `BoilerPanel`, `PipesUi`) revela la 2ª cifra.
+2. **Los posavasos** (acertijo de deducción, `SeatingPuzzle`, `Coaster`, `TableBoard`, `TableUi`) revela la 4ª cifra. Hay cuatro posavasos por la sala y un tablón donde se ordena la mesa.
+3. **El acertijo del cuñado** (móvil, `Riddles`) no revela cifra: baja o sube la cerveza 1 °C. Es la prueba "extra" porque hay 5 pruebas candidatas y solo 4 cifras (decisión mía, fácil de cambiar en `GameState.DIGIT_TRIALS`).
+4. **Una cifra por prueba:** el espejo ahora da solo el 1º "3" y el dispensador solo el 3º "1". El móvil muestra la línea "CÓDIGO 3 _ _ 2".
+5. **Pistas del móvil** nuevas para tuberías y posavasos; teclas F5 (tuberías) y F6 (posavasos).
+6. **Pruebas:** el autotest juega los tres minijuegos nuevos, comprueba que cada prueba revela una sola cifra y que las cuatro dan 3312. Tests nuevos `tests/test_pipes.gd` y `tests/test_seating.gd` (solución única).
+
+### Qué probar a mano en la siguiente sesión (v4)
+
+- ¿Las tuberías tienen la dificultad adecuada? (hacen falta al menos 8 giros por la ruta conocida)
+- ¿Es fácil encontrar los cuatro posavasos? ¿Se entiende que el tablón de corcho es donde se ordena la mesa?
+- ¿Es lógico que el acertijo del cuñado no dé cifra? Si prefieres que dé una, dilo y cambiamos el reparto.
+- Se ve poco de lejos el texto "LA CAÑA PERFECTA" de los posavasos, pero solo importa cuando los lees de cerca.

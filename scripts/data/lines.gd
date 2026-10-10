@@ -95,8 +95,8 @@ const NARRATOR := {
 		"Dispensador metálico. Con cerradura. Para papel. Claro que sí.",
 	],
 	"dispenser_note": [
-		"Una nota: '_ _ 1 2'. Alguien dejó media contraseña y se fue tan pancho.",
-		"La nota dice '_ _ 1 2'. El resto estará en otro sitio. Típico.",
+		"Una nota con una sola cifra: '_ _ 1 _'. Alguien repartió el código por todo el baño.",
+		"La nota dice '_ _ 1 _'. Las otras cifras estarán en otro sitio. Típico.",
 	],
 	"mirror_look": [
 		"Te miras al espejo. Te devuelve una mirada de 'te lo dije'.",
@@ -104,14 +104,14 @@ const NARRATOR := {
 		"Te ves bien. Para estar encerrado en un baño, digo.",
 	],
 	"mirror_fogged": [
-		"El espejo está empañado y alguien ha escrito con el dedo: '3 3 _ _'. Qué asco y qué útil.",
+		"El espejo está empañado y alguien ha escrito con el dedo: '3 _ _ _'. Una cifra. Qué asco y qué útil.",
 	],
 	"mirror_reveal": [
-		"El vaho revela algo escrito con el dedo: '3 3 _ _'. La higiene, una vez más, al servicio del misterio.",
-		"Con el vaho aparece un mensaje en el espejo: '3 3 _ _'. Alguien se aburría mucho aquí.",
+		"El vaho revela una cifra escrita con el dedo: '3 _ _ _'. La higiene, una vez más, al servicio del misterio.",
+		"Con el vaho aparece un número en el espejo: '3 _ _ _'. Alguien se aburría mucho aquí.",
 	],
 	"mirror_after": [
-		"El espejo, ya sin vaho. Ponía '3 3 _ _'. Por si se te olvida.",
+		"El espejo, ya sin vaho. Ponía '3 _ _ _'. Por si se te olvida.",
 	],
 	"hint_used": [
 		"Has pedido ayuda por el grupo. Tu cerveza se calienta de vergüenza.",
@@ -176,6 +176,51 @@ const NARRATOR := {
 		"¡La puerta cede! El baño vomita agua y a ti detrás.",
 		"CRAAAC. La puerta no aguanta y el baño entero sale por ella.",
 	],
+	"boiler_look": [
+		"El cuadro de la caldera tiene una pantalla apagada y un esquema de tuberías cortadas. Alguien lo ha dejado hecho un lío.",
+		"La caldera pide que arregles las tuberías. Qué cara más seria para un baño.",
+	],
+	"boiler_done": [
+		"La caldera ronronea feliz. En la pantalla pone '_ 3 _ _'.",
+		"Todo conectado. La pantalla sigue mostrando '_ 3 _ _'.",
+	],
+	"pipes_solved": [
+		"El vapor llega a la caldera, que se enciende con un zumbido. En la pantalla: '_ 3 _ _'. Otra cifra.",
+		"Tuberías conectadas. La caldera te enseña una cifra: '_ 3 _ _'.",
+	],
+	"coaster_reread": [
+		"Ya lo habías leído. Sigue diciendo lo mismo, para desgracia de todos.",
+	],
+	"board_missing": [
+		"Te faltan posavasos por leer. Hay cuatro repartidos por el baño, pegados con chicle.",
+		"Con las pistas a medias, la mesa no se arregla. Busca los posavasos que faltan.",
+	],
+	"board_wrong": [
+		"Eso no cuadra con lo que dicen los posavasos. Alguien se ha sentado donde no debe.",
+		"Mal sentados. Algún posavasos se queja.",
+		"Esa mesa no es. Vuelve a leer los posavasos.",
+	],
+	"coasters_solved": [
+		"¡Cuadra! Tu caña estaba delante del asiento 2: se la bebió Marta. Siempre Marta. Cifra nueva: '_ _ _ 2'.",
+		"Resuelto. Marta, asiento 2, culpable de tu cerveza. Cifra nueva: '_ _ _ 2'.",
+	],
+	"board_done": [
+		"La mesa ya está bien sentada. El culpable, Marta, asiento 2: '_ _ _ 2'.",
+	],
+	"riddle_right": [
+		"Javi: «¡Toma! Lo sabía.» Y tu cerveza baja un grado.",
+		"Javi te manda un pulgar arriba. Tu cerveza baja un grado.",
+	],
+	"riddle_wrong": [
+		"Javi: «No, hombre, no.» Tu cerveza sube un grado de la vergüenza.",
+		"Respuesta equivocada. Javi suspira y tu cerveza sube un grado.",
+	],
+	"riddle_done": [
+		"Javi se ha quedado sin acertijos. Por hoy.",
+	],
+	"digit_found": [
+		"Cifra apuntada en el móvil.",
+	],
 	"test_object": [
 		"Esto es un objeto de prueba. Muy interactivo. Muy de prueba.",
 	],
@@ -226,11 +271,21 @@ const HINTS := {
 	"mirror": [
 		["Paco", "¿Te has lavado las manos? Con agua caliente. Y que salga caliente, que no es lo mismo."],
 		["Marta", "Si el grifo caliente sale frío, es que falta vapor. Mira la tubería roja de la esquina, junto a la puerta: tiene una llave. Y con el grifo frío cerrado, que si no sale tibia."],
-		["Javi", "Gira la palanca de la tubería roja de vapor (esquina de la puerta), cierra el grifo frío, abre el caliente y espera unos segundos mirando al espejo. Sale '3 3'. Si cierras el grifo, se borra."],
+		["Javi", "Gira la palanca de la tubería roja de vapor (esquina de la puerta), cierra el grifo frío, abre el caliente y espera unos segundos mirando al espejo. Sale un '3' en el espejo. Si cierras el grifo, se borra."],
+	],
+	"pipes": [
+		["Lucía", "El cuadro de la caldera, en la pared junto al cuadro eléctrico, tiene un esquema de tuberías. Alguien las ha dejado giradas a lo loco."],
+		["Marta", "Haz clic en cada tubería para girarla. El vapor entra por la izquierda y tiene que salir por la derecha, dos filas más abajo. Las que se iluminan ya están conectadas."],
+		["Javi", "El camino bueno, de izquierda a derecha: recta tumbada, curva izquierda-abajo, curva arriba-derecha, recta tumbada, T con salida a la izquierda, a la derecha y arriba, y recta tumbada."],
+	],
+	"coasters": [
+		["Paco", "Hay posavasos pegados con chicle repartidos por todo el baño. Cada uno dice dónde se sienta alguien. Léelos todos."],
+		["Lucía", "Con los cuatro leídos, ve al tablón de corcho, el de la pared de la puerta, y coloca a los cuatro amigos en la barra, de izquierda a derecha."],
+		["Marta", "De izquierda a derecha: Javi, Marta, Lucía y Paco. Y la que estaba en el asiento 2... bueno, ya sabes quién se bebió tu caña."],
 	],
 	"keypad": [
 		["Lucía", "Tienes trozos de un código, ¿no? Junta las piezas, que no es un mueble de Ikea."],
-		["Paco", "Espejo: las dos primeras cifras. Nota del dispensador: las dos últimas. Hasta yo lo veo, y voy por la cuarta."],
+		["Paco", "Cada prueba te da UNA cifra, y su sitio va marcado con guiones. Las vas apuntando en el móvil, mira arriba. Hasta yo lo veo, y voy por la cuarta."],
 		["Marta", "3312. Teclea 3312 en el teclado de la puerta. Sin miedo."],
 	],
 	"door": [

@@ -30,6 +30,9 @@ var dispenser: Dispenser
 var mop: Mop
 var valve: Valve
 var steam: SteamPipe
+var boiler: BoilerPanel
+var board: TableBoard
+var coasters: Array[Coaster] = []
 var plug: SinkPlug
 var sink_mount: Node3D
 var flood: Flood
@@ -52,6 +55,7 @@ func _ready() -> void:
 	_build_west_wall()
 	_build_south_wall()
 	_build_decor()
+	_build_trial_props()
 	_build_graffiti()
 	_build_flood()
 	GameState.lights_turned_on.connect(_on_lights_on)
@@ -296,6 +300,23 @@ func _build_steam_corner() -> void:
 	steam.position = Vector3(1.86, 0.0, -1.36)
 	add_child(steam)
 	valve = steam.valve
+
+
+## Boiler cabinet (pipes puzzle), the four coasters and the cork board of "mesa 7" (seating riddle).
+func _build_trial_props() -> void:
+	boiler = BoilerPanel.new()
+	mount("east", 0.3, 1.25).add_child(boiler)
+
+	# [wall, along, y] of each coaster: spread around the room so the player has to walk.
+	var spots := [["south", -0.45, 1.0], ["east", 1.2, 1.0], ["west", -1.2, 1.0], ["west", 0.5, 1.2]]
+	for i in spots.size():
+		var coaster := Coaster.new()
+		coaster.index = i
+		mount(spots[i][0], spots[i][1], spots[i][2]).add_child(coaster)
+		coasters.append(coaster)
+
+	board = TableBoard.new()
+	mount("north", -1.3, 1.05).add_child(board)
 
 
 func _build_graffiti() -> void:

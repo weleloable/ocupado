@@ -20,6 +20,8 @@ static func register() -> void:
 	_add_key("debug_2", KEY_F2)
 	_add_key("debug_3", KEY_F3)
 	_add_key("debug_4", KEY_F4)
+	_add_key("debug_5", KEY_F5)
+	_add_key("debug_6", KEY_F6)
 
 
 static func _ensure(action: StringName) -> void:

@@ -1,6 +1,6 @@
 class_name Dispenser
 extends Interactable
-## Metal paper dispenser. Opens when the ritual is completed, revealing the note "_ _ 1 2".
+## Metal paper dispenser. Opens when the ritual is completed, revealing the note with its digit ("_ _ 1 _").
 
 var _lid_pivot: Node3D
 var _open: bool = false
@@ -12,7 +12,7 @@ func _ready() -> void:
 	add_mesh_box(Vector3(0.36, 0.42, 0.12), Vector3(0, 0, 0.06), metal)
 	# Note, hidden behind the lid.
 	Build.box(self, Vector3(0.27, 0.27, 0.004), Vector3(0, 0.02, 0.123), Build.mat(Color(0.95, 0.93, 0.85)))
-	Build.label_fit(self, "_  _  1  2", Vector3(0, 0.02, 0.127), 0.0, Vector2(0.21, 0.09), Color(0.1, 0.1, 0.15))
+	Build.label_fit(self, GameState.digit_pattern(GameState.DIGIT_TRIALS["ritual"]), Vector3(0, 0.02, 0.127), 0.0, Vector2(0.21, 0.09), Color(0.1, 0.1, 0.15))
 	# Lid hinged at the bottom.
 	_lid_pivot = Node3D.new()
 	_lid_pivot.position = Vector3(0, -0.21, 0.136)

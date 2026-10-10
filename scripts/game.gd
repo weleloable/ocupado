@@ -5,13 +5,15 @@ extends Node3D
 signal restart_requested
 signal menu_requested
 
-enum UiState { PLAYING, PHONE, KEYPAD, PAUSED, WON }
+enum UiState { PLAYING, PHONE, KEYPAD, PIPES, TABLE, PAUSED, WON }
 
 var state: UiState = UiState.PLAYING
 var room: Room
 var player: Player
 var hud: Hud
 var keypad_ui: KeypadUi
+var pipes_ui: PipesUi
+var table_ui: TableUi
 var phone: Phone
 var pause_menu: PauseMenu
 
@@ -39,6 +41,16 @@ func _ready() -> void:
 	add_child(keypad_ui)
 	keypad_ui.closed.connect(_on_overlay_closed)
 
+	pipes_ui = PipesUi.new()
+	pipes_ui.process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_child(pipes_ui)
+	pipes_ui.closed.connect(_on_overlay_closed)
+
+	table_ui = TableUi.new()
+	table_ui.process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_child(table_ui)
+	table_ui.closed.connect(_on_overlay_closed)
+
 	phone = Phone.new()
 	phone.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(phone)
@@ -51,6 +63,8 @@ func _ready() -> void:
 	pause_menu.quit_pressed.connect(menu_requested.emit)
 
 	GameState.keypad_ui_requested.connect(_open_keypad)
+	GameState.pipes_ui_requested.connect(_open_overlay.bind(pipes_ui, UiState.PIPES))
+	GameState.table_ui_requested.connect(_open_overlay.bind(table_ui, UiState.TABLE))
 	GameState.game_won.connect(_on_won)
 	_set_state(UiState.PLAYING)
 
@@ -89,6 +103,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				keypad_ui.close()
 			UiState.PHONE:
 				phone.close()
+			UiState.PIPES:
+				pipes_ui.close()
+			UiState.TABLE:
+				table_ui.close()
 		get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("hint"):
@@ -115,6 +133,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		GameState.solve_mirror()
 	elif event.is_action_pressed("debug_4"):
 		GameState.solve_keypad()
+	elif event.is_action_pressed("debug_5"):
+		GameState.solve_pipes()
+	elif event.is_action_pressed("debug_6"):
+		GameState.solve_coasters()
 
 
 func _open_keypad() -> void:
@@ -125,11 +147,13 @@ func _open_keypad() -> void:
 
 
 func _on_overlay_closed() -> void:
-	if state == UiState.KEYPAD or state == UiState.PHONE:
+	if state in [UiState.KEYPAD, UiState.PHONE, UiState.PIPES, UiState.TABLE]:
 		_set_state(UiState.PLAYING)
 
 
 func _on_won() -> void:
+	pipes_ui.close()
+	table_ui.close()
 	keypad_ui.close()
 	phone.close()
 	_set_state(UiState.WON)
@@ -138,3 +162,10 @@ func _on_won() -> void:
 	add_child(victory)
 	victory.replay_pressed.connect(restart_requested.emit)
 	victory.menu_pressed.connect(menu_requested.emit)
+
+
+func _open_overlay(overlay: Node, target: UiState) -> void:
+	if state != UiState.PLAYING:
+		return
+	overlay.call("open")
+	_set_state(target)

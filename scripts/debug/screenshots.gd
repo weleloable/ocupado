@@ -33,6 +33,9 @@ const CLOSEUPS := [
 	[Vector3(1.0, 0.05, 0.2), -90.0, 5.0, "c_clue_east"],
 	[Vector3(-1.0, 0.05, -0.34), 90.0, -48.0, "c_plug"],
 	[Vector3(-0.2, 0.05, 0.5), 90.0, 12.0, "c_west_clues"],
+	[Vector3(1.2, 0.05, 0.3), -90.0, -27.0, "c_boiler"],
+	[Vector3(-1.3, 0.05, -0.6), 0.0, -33.0, "c_board"],
+	[Vector3(-0.45, 0.05, 0.7), 180.0, -39.0, "c_coaster1"],
 ]
 
 
@@ -73,6 +76,8 @@ func _ready() -> void:
 		return
 	if "--flood" in OS.get_cmdline_user_args():
 		await _flood_shots()
+	if "--trials" in OS.get_cmdline_user_args():
+		await _trial_ui_shots()
 	if "--ui" in OS.get_cmdline_user_args():
 		await _ui_shots()
 	get_tree().quit()
@@ -161,3 +166,28 @@ func _oblique_test() -> void:
 			game.player.rotation.y = deg_to_rad(pose[1])
 			game.player.camera.rotation.x = deg_to_rad(pose[2])
 			await _snap("%s_m%d" % [pose[3], mode])
+
+
+func _trial_ui_shots() -> void:
+	GameState.controls_locked = false
+	game.player.global_position = Vector3(0, 0.05, 0.7)
+	game.player.rotation.y = 0.0
+	game.player.camera.rotation.x = 0.0
+	GameState.pipes_ui_requested.emit()
+	await _snap("t_pipes_start")
+	game.pipes_ui._on_tile_clicked(5, 1)
+	game.pipes_ui._on_tile_clicked(6, 2)
+	await _snap("t_pipes_partial")
+	game.pipes_ui.solve_for_test()
+	await get_tree().create_timer(2.2).timeout
+	GameState.coasters_read = [true, true, false, false]
+	GameState.table_ui_requested.emit()
+	game.table_ui.set_seats_for_test(["Paco", "Lucía", "Javi", "Marta"])
+	await _snap("t_table")
+	GameState.coasters_read = [true, true, true, true]
+	game.table_ui.check_seating()
+	await _snap("t_table_checked")
+	game.table_ui.close()
+	game.phone.open()
+	game.phone._set_riddle_mode(true)
+	await _snap("t_phone_riddle")

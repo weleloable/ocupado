@@ -1,6 +1,6 @@
 class_name MirrorFog
 extends Interactable
-## Puzzle 3: the mirror only fogs up (revealing "3 3 _ _") when ALL of these hold:
+## Puzzle 3: the mirror only fogs up (revealing "3 _ _ _") when ALL of these hold:
 ##  - the red hot-water valve is open,
 ##  - the hot tap is open and has been running for WARMUP seconds (first the pipe runs cold),
 ##  - the cold tap is closed (hot + cold = lukewarm, and lukewarm does not fog).
@@ -29,7 +29,7 @@ func _ready() -> void:
 	add_mesh_box(Vector3(0.56, 0.66, 0.01), Vector3(0, 0, 0.025), glass)
 	_fog_mat = Build.mat_unique(Color(0.92, 0.94, 0.96, 0.0))
 	Build.box(self, Vector3(0.55, 0.65, 0.004), Vector3(0, 0, 0.033), _fog_mat)
-	_text = Build.label_fit(self, "3  3  _  _", Vector3(0, 0, 0.04), 0.0, Vector2(0.46, 0.16), Color(0.2, 0.25, 0.3, 0.0))
+	_text = Build.label_fit(self, GameState.digit_pattern(GameState.DIGIT_TRIALS["mirror"]), Vector3(0, 0, 0.04), 0.0, Vector2(0.46, 0.16), Color(0.2, 0.25, 0.3, 0.0))
 	_text.alpha_cut = Label3D.ALPHA_CUT_DISABLED
 	_text.render_priority = 2
 	add_shape(Vector3(0.62, 0.72, 0.06), Vector3(0, 0, 0.03))

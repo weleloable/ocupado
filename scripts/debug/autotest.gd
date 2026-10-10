@@ -72,6 +72,45 @@ func _ready() -> void:
 	_check(GameState.mirror_done, "mirror revealed")
 	room.hot_tap.interact()
 
+	_check(GameState.digits_found == [true, false, true, false], "ritual and mirror each revealed ONE digit")
+
+	# Boiler pipes: the UI opens, a click rotates a piece, the known solution reveals digit 2.
+	room.boiler.interact()
+	_check(game.state == Game.UiState.PIPES, "pipes UI opened")
+	var before_click: int = game.pipes_ui.rotations[0]
+	game.pipes_ui._on_tile_clicked(0, 1)
+	_check(game.pipes_ui.rotations[0] == posmod(before_click + 1, 4), "clicking rotates a piece")
+	_check(not GameState.pipes_done, "pipes not solved by one click")
+	game.pipes_ui.solve_for_test()
+	await _wait(2.5)
+	_check(GameState.pipes_done and GameState.digits_found[1], "pipes solved reveals digit 2")
+	_check(game.state == Game.UiState.PLAYING, "pipes UI closed")
+
+	# Coasters: the board refuses until all four are read, then needs the exact seating.
+	room.board.interact()
+	_check(game.state == Game.UiState.TABLE, "table UI opened")
+	game.table_ui.set_seats_for_test(SeatingPuzzle.SOLUTION)
+	game.table_ui.check_seating()
+	_check(not GameState.coasters_done, "correct seating refused while coasters are unread")
+	for coaster in room.coasters:
+		coaster.interact()
+	_check(not GameState.coasters_read.has(false), "all four coasters read")
+	game.table_ui.set_seats_for_test(["Paco", "Lucía", "Javi", "Marta"])
+	game.table_ui.check_seating()
+	_check(not GameState.coasters_done, "wrong seating rejected")
+	game.table_ui.set_seats_for_test(SeatingPuzzle.SOLUTION)
+	game.table_ui.check_seating()
+	await _wait(3.0)
+	_check(GameState.coasters_done and GameState.digits_found[3], "coasters solved reveals digit 4")
+	_check(game.state == Game.UiState.PLAYING, "table UI closed")
+	_check(GameState.code_so_far() == "3  3  1  2", "the four digits give 3312")
+
+	# Riddles of the brother-in-law: right answer cools 1 C, wrong answer heats 1 C.
+	game.phone._on_answer(int(Riddles.LIST[0]["answer"]))
+	_check(GameState.riddles_solved == 1 and is_equal_approx(GameState.temp_adjust, -1.0), "right riddle answer cools the beer")
+	game.phone._on_answer((int(Riddles.LIST[1]["answer"]) + 1) % 3)
+	_check(GameState.riddles_solved == 1 and is_equal_approx(GameState.temp_adjust, 0.0), "wrong riddle answer heats it back")
+
 	# Phone hint costs exactly 1 °C.
 	var before := GameState.get_temperature()
 	game._unhandled_input(_action_event("hint"))

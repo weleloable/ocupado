@@ -13,6 +13,12 @@ signal game_won
 signal valve_hint
 ## The steam valve was turned (true = open).
 signal valve_changed(open: bool)
+signal pipes_ui_requested
+signal pipes_solved
+signal table_ui_requested
+signal coasters_solved
+## A trial revealed one digit of the keypad code (`position` is 0..3).
+signal digit_revealed(trial: String, position: int)
 
 enum RitualResult { IGNORED, PROGRESS, FAIL, SOLVED }
 
@@ -20,6 +26,9 @@ const START_TEMP := 4.0
 const SECONDS_PER_DEGREE := 40.0
 const RITUAL_SEQUENCE := ["dryer", "mop", "chain", "cold_tap", "dryer"]
 const CODE := "3312"
+## Which digit of CODE each trial reveals (one digit per trial, 4 trials).
+const DIGIT_TRIALS := {"mirror": 0, "pipes": 1, "ritual": 2, "coasters": 3}
+const MIN_TEMP := 2.0
 const ENDINGS_PATH := "user://endings.cfg"
 const ENDING_IDS := ["door", "flood"]
 
@@ -36,6 +45,15 @@ var ritual_done: bool = false
 var ritual_step: int = 0
 var mirror_done: bool = false
 var keypad_done: bool = false
+var pipes_done: bool = false
+var coasters_done: bool = false
+## digits_found[i] is true once the trial of position i revealed CODE[i].
+var digits_found: Array[bool] = [false, false, false, false]
+## Coasters read so far (indexes 0..3), shown on the table board.
+var coasters_read: Array[bool] = [false, false, false, false]
+## Riddles answered by the brother-in-law in the phone: right ones cool the beer, wrong ones heat it.
+var riddles_solved: int = 0
+var temp_adjust: float = 0.0
 var won: bool = false
 var final_time: float = 0.0
 var final_temp: float = 0.0
@@ -63,6 +81,12 @@ func reset() -> void:
 	ritual_step = 0
 	mirror_done = false
 	keypad_done = false
+	pipes_done = false
+	coasters_done = false
+	digits_found = [false, false, false, false]
+	coasters_read = [false, false, false, false]
+	riddles_solved = 0
+	temp_adjust = 0.0
 	won = false
 	final_time = 0.0
 	final_temp = 0.0
@@ -83,7 +107,7 @@ func _process(delta: float) -> void:
 
 
 func get_temperature() -> float:
-	return START_TEMP + elapsed / SECONDS_PER_DEGREE + float(hints_used)
+	return maxf(MIN_TEMP, START_TEMP + elapsed / SECONDS_PER_DEGREE + float(hints_used) + temp_adjust)
 
 
 func say(event: String) -> void:
@@ -149,6 +173,7 @@ func solve_ritual() -> void:
 	ritual_step = RITUAL_SEQUENCE.size()
 	ritual_solved.emit()
 	say("ritual_solved")
+	reveal_digit("ritual")
 
 
 # --- Puzzle 3: mirror ---
@@ -159,6 +184,69 @@ func solve_mirror() -> void:
 	mirror_done = true
 	mirror_revealed.emit()
 	say("mirror_reveal")
+	reveal_digit("mirror")
+
+
+# --- Puzzle: boiler pipes ---
+
+func solve_pipes() -> void:
+	if pipes_done:
+		return
+	pipes_done = true
+	pipes_solved.emit()
+	say("pipes_solved")
+	reveal_digit("pipes")
+
+
+# --- Riddle: coasters (who drank your beer) ---
+
+## The player read coaster `index` (0..3).
+func read_coaster(index: int) -> void:
+	coasters_read[index] = true
+
+
+func solve_coasters() -> void:
+	if coasters_done:
+		return
+	coasters_done = true
+	coasters_solved.emit()
+	say("coasters_solved")
+	reveal_digit("coasters")
+
+
+# --- Digits of the keypad code ---
+
+func reveal_digit(trial: String) -> void:
+	var pos: int = DIGIT_TRIALS[trial]
+	if digits_found[pos]:
+		return
+	digits_found[pos] = true
+	digit_revealed.emit(trial, pos)
+
+
+## "3  _  _  2": the digits found so far, in place.
+func code_so_far() -> String:
+	var parts: Array[String] = []
+	for i in CODE.length():
+		parts.append(CODE[i] if digits_found[i] else "_")
+	return "  ".join(parts)
+
+
+## "_  _  1  _": only the digit at `position`, as written on the object that reveals it.
+static func digit_pattern(position: int) -> String:
+	var parts: Array[String] = []
+	for i in CODE.length():
+		parts.append(CODE[i] if i == position else "_")
+	return "  ".join(parts)
+
+
+## Brother-in-law riddles: right answer cools the beer, wrong one heats it (1 °C each).
+func answer_riddle(correct: bool) -> void:
+	if correct:
+		riddles_solved += 1
+		temp_adjust -= 1.0
+	else:
+		temp_adjust += 1.0
 
 
 # --- Puzzle 4: keypad ---
@@ -211,6 +299,10 @@ func current_puzzle() -> String:
 		return "ritual"
 	if not mirror_done:
 		return "mirror"
+	if not pipes_done:
+		return "pipes"
+	if not coasters_done:
+		return "coasters"
 	if not keypad_done:
 		return "keypad"
 	return "door"
