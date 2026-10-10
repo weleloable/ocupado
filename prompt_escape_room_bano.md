@@ -44,7 +44,8 @@ window/size/viewport_width=640
 window/size/viewport_height=360
 window/size/window_width_override=1280
 window/size/window_height_override=720
-window/stretch/mode="viewport"
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
 
 [rendering]
 renderer/rendering_method="gl_compatibility"
@@ -53,7 +54,7 @@ textures/canvas_textures/default_texture_filter=0
 textures/default_filters/anisotropic_filtering_level=4
 ```
 
-- Resolución interna **640 × 360** con stretch `viewport` y filtro `nearest`: el juego se ve pixelado (retro) en una ventana de 1280 × 720. Todas las coordenadas de UI de este documento son en ese espacio de 640 × 360.
+- Resolución base **640 × 360** con stretch **`canvas_items`** (aspecto `keep`) en una ventana de 1280 × 720: la UI se diseña en coordenadas de 640 × 360 y se escala nítida, y **el 3D se dibuja a la resolución real de la ventana**. El aspecto retro lo dan las texturas procedurales con filtro `nearest`, no una resolución baja. (Con stretch `viewport` a 640 × 360 todo se veía más pixelado, pero los textos de las paredes eran ilegibles: el jugador lo pidió cambiar.)
 - Las acciones de entrada se registran por código con `InputMap` (clase `InputSetup`, llamada desde `GameState._ready`): `move_forward` (W, ↑), `move_back` (S, ↓), `move_left` (A, ←), `move_right` (D, →), `interact` (E y clic izquierdo), `hint` (H), `pause` (Esc), `debug_1`…`debug_6` (F1…F6). Usa `physical_keycode`.
 - `.gitignore`: `.godot/`, `*.tmp`, `export/`, `*.exe`, `*.pck`. `.gitattributes`: `* text=auto eol=lf` y `*.png binary`. **Nunca** subas a git los `.exe` exportados (pesan ~100 MB): usa `git add` con cuidado.
 
@@ -449,7 +450,7 @@ No se puede ver la pantalla, así que todo se verifica con estas herramientas, t
 
 ## 14. Trampas conocidas (no repetirlas)
 
-1. Texto 3D con filtro `nearest` y recorte de alfa → ilegible de lado. Usa lo descrito en §3.1.
+1. Texto 3D con filtro `nearest` y recorte de alfa, o 3D renderizado a 640 × 360 → ilegible de lado o a 2-3 m. Usa lo descrito en §3.1 y el stretch `canvas_items`.
 2. Texto a menos de ~5 mm de su superficie con un `far` de cámara grande → z-fighting (texto roto y parpadeante).
 3. Texto más ancho que su cartel → parece descentrado. Usa siempre `label_fit`.
 4. La moldura de y = 1,4 sobresale de la pared y corta cualquier cartel que la cruce.
@@ -492,3 +493,4 @@ Tras cada fase: `--import`, tests, autotest y capturas, y corrige todo error o w
 - **v4:** tuberías de la caldera, posavasos (deducción) y acertijos del cuñado; una cifra por prueba (4 pruebas con cifra; el cuñado da temperatura).
 - **v4.1:** z-fighting de los textos corregido (cámara de 0,05 a 30 m, textos separados 4 mm); carteles pequeños agrandados.
 - **v4.2:** pintadas con estilos de rotulador, mugre y vaho; menos mensajes; cartel "NO INUNDAR" con la fregona en el cubo en lugar de la pista explícita.
+- **v4.3:** el 3D se renderiza a la resolución de la ventana (stretch `canvas_items`) porque los textos de las paredes seguían viéndose muy pixelados; las texturas siguen siendo pixel art.
