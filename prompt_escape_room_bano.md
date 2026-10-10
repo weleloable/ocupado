@@ -202,3 +202,12 @@ Comentarios del jugador: "el puzle 2 me gusta como idea (ir tocando cosas) pero 
 - El preset "Windows Desktop" (`export_presets.cfg`) ya usa `res://icon.ico`, y lleva nombre de producto "Ocupado", versión 1.0.0 y descripción.
 - Para que Godot **incruste** el icono en el `.exe` hace falta **rcedit**. Está descargado en `C:\Users\Eduardo\Documents\EDUARDO\herramientas\rcedit\rcedit-x64.exe` (v2.0.0, oficial de electron/rcedit) y hay que indicarlo una vez en Godot: Editor → Ajustes del editor → Exportar → Windows → Rcedit.
 - Los `.exe` y `.pck` exportados no se versionan (`.gitignore`).
+
+### v3.1: legibilidad de los textos 3D
+
+Comentario del jugador: "los textos de las paredes se leen mal cuando estás de lado: las letras pixeladas se deforman".
+
+- Causa: el texto se dibujaba con filtro `nearest` y recorte duro de alfa, y la resolución interna es solo 640x360; con el texto visto casi de canto, cada letra ocupaba pocos píxeles y se rompía.
+- Solución: todos los `Label3D` (`Build.label`) usan filtro lineal con mipmaps y anisotrópico (`textures/default_filters/anisotropic_filtering_level=4` en `project.godot`), mezcla de alfa suave, tipografía a doble resolución (`font_size` 96 en `label_fit`) y una variación **en negrita** de la fuente por defecto (`Build.label_font()`). El suelo, las paredes y el resto siguen siendo pixel art con filtro `nearest`.
+- Las pistas del ritual y las pintadas importantes se parten en líneas más cortas para poder dibujar letras más grandes en el mismo hueco.
+- Comprobación: `-- --shots=<carpeta> --lights --clues --oblique` genera capturas en ángulo con cuatro modos de texto, y `tools/compare_crops.gd` apila recortes ampliados para compararlos.

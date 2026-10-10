@@ -115,17 +115,29 @@ static func static_box(parent: Node, size: Vector3, pos: Vector3, material: Mate
 	return body
 
 
+static var _label_font: FontVariation
+
+
+## Slightly bold version of the default font: stays readable when the wall text is seen from the side.
+static func label_font() -> Font:
+	if _label_font == null:
+		_label_font = FontVariation.new()
+		_label_font.base_font = ThemeDB.fallback_font
+		_label_font.variation_embolden = 0.35
+	return _label_font
+
+
 ## Label scaled so the whole text fits inside `max_size` (meters), centered on `pos`.
 static func label_fit(parent: Node, text: String, pos: Vector3, rot_y: float, max_size: Vector2,
-		color: Color, outline: int = 0, font_size: int = 48) -> Label3D:
-	var font := ThemeDB.fallback_font
+		color: Color, outline: int = 0, font_size: int = 96) -> Label3D:
+	var font := label_font()
 	var lines := text.split("\n")
 	var widest := 1.0
 	for line in lines:
 		widest = maxf(widest, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x)
 	var height := font.get_height(font_size) * lines.size()
 	var pixel := minf(max_size.x / widest, max_size.y / height)
-	return label(parent, text, pos, rot_y, font_size, color, pixel, outline)
+	return label(parent, text, pos, rot_y, font_size, color, pixel, int(outline * font_size / 48.0))
 
 
 static func label(parent: Node, text: String, pos: Vector3, rot_y: float, font_size: int,
@@ -141,7 +153,9 @@ static func label(parent: Node, text: String, pos: Vector3, rot_y: float, font_s
 	l.outline_modulate = Color(0, 0, 0, color.a)
 	l.shaded = false
 	l.double_sided = false
-	l.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-	l.alpha_cut = Label3D.ALPHA_CUT_DISCARD
+	l.font = label_font()
+	# Smooth filtering (not nearest) keeps letters readable at grazing angles on low-res 3D.
+	l.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	l.alpha_cut = Label3D.ALPHA_CUT_DISABLED
 	parent.add_child(l)
 	return l

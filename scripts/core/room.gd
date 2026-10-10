@@ -312,12 +312,12 @@ func _build_graffiti() -> void:
 	var cyan := Color(0.3, 0.95, 1.0)
 	# The ritual is a chain: the first line is visible with the black light, and every correct step
 	# reveals the next one next to the object that was just used (see _on_ritual_progressed).
-	_graffiti("north", -1.28, 1.86, "EL RITUAL DEL PARROQUIANO\n1. EL VIENTO QUE SECA", Vector2(1.15, 0.3), neon, true)
+	_graffiti("north", -1.28, 1.86, "EL RITUAL DEL\nPARROQUIANO\n1. EL VIENTO\nQUE SECA", Vector2(1.0, 0.7), neon, true)
 	ritual_clues = [
-		_graffiti("south", -0.9, 2.25, "2. LA VETERANA DE 2009", Vector2(0.85, 0.16), neon, false, true),
-		_graffiti("west", 1.1, 1.75, "3. EL RÍO QUE ARRASTRA", Vector2(0.8, 0.16), neon, false, true),
-		_graffiti("east", 1.05, 1.75, "4. LO FRÍO QUE MOJA", Vector2(0.75, 0.16), neon, false, true),
-		_graffiti("west", -0.2, 2.25, "5. OTRA VEZ EL VIENTO", Vector2(0.85, 0.16), neon, false, true),
+		_graffiti("south", -0.9, 2.2, "2. LA VETERANA\nDE 2009", Vector2(0.9, 0.34), neon, false, true),
+		_graffiti("west", 1.0, 1.75, "3. EL RÍO\nQUE ARRASTRA", Vector2(0.9, 0.34), neon, false, true),
+		_graffiti("east", 1.05, 1.75, "4. LO FRÍO\nQUE MOJA", Vector2(0.8, 0.34), neon, false, true),
+		_graffiti("west", -0.2, 2.25, "5. OTRA VEZ\nEL VIENTO", Vector2(0.9, 0.34), neon, false, true),
 	]
 	_graffiti("west", 0.95, 2.2, "SIN VAPOR NO HAY\nAGUA CALIENTE", Vector2(1.0, 0.3), pink, true)
 	_graffiti("south", 0.9, 1.88, "EL PAPEL NO SE GANA,\nSE MERECE", Vector2(0.8, 0.2), pink, true)

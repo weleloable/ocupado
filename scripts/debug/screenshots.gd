@@ -67,6 +67,10 @@ func _ready() -> void:
 		var path := out_dir.path_join("%s.png" % pose[3])
 		img.save_png(path)
 		print("saved ", path)
+	if "--oblique" in OS.get_cmdline_user_args():
+		await _oblique_test()
+		get_tree().quit()
+		return
 	if "--flood" in OS.get_cmdline_user_args():
 		await _flood_shots()
 	if "--ui" in OS.get_cmdline_user_args():
@@ -121,3 +125,39 @@ func _flood_shots() -> void:
 	await _snap("f_flooding")
 	room.flood.progress = Flood.TIME_TO_FLOOD * 0.97
 	await _snap("f_almost")
+
+
+## Text legibility test at oblique angles: `--oblique` renders each pose with every text mode.
+const OBLIQUE := [
+	[Vector3(1.5, 0.05, -0.9), 77.8, 4.0, "o_poem_77"],
+	[Vector3(0.6, 0.05, 0.4), 44.7, 4.0, "o_poem_45"],
+	[Vector3(1.2, 0.05, -0.6), 135.0, 4.0, "o_south_45"],
+]
+
+
+func _oblique_test() -> void:
+	var originals := {}
+	for l: Label3D in game.find_children("*", "Label3D", true, false):
+		originals[l] = [l.texture_filter, l.alpha_cut, l.font_size, l.pixel_size, l.outline_size]
+	for mode in 4:
+		for l: Label3D in originals:
+			var o: Array = originals[l]
+			l.texture_filter = o[0]
+			l.alpha_cut = o[1]
+			l.font_size = o[2]
+			l.pixel_size = o[3]
+			l.outline_size = o[4]
+			if mode >= 1:
+				l.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+			if mode >= 2:
+				l.alpha_cut = Label3D.ALPHA_CUT_DISABLED
+			if mode >= 3:
+				l.font_size = o[2] * 2
+				l.pixel_size = o[3] * 0.5
+				l.outline_size = o[4] * 2
+		for pose: Array in OBLIQUE:
+			GameState.controls_locked = true
+			game.player.global_position = pose[0]
+			game.player.rotation.y = deg_to_rad(pose[1])
+			game.player.camera.rotation.x = deg_to_rad(pose[2])
+			await _snap("%s_m%d" % [pose[3], mode])
