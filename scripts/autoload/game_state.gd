@@ -11,6 +11,8 @@ signal keypad_solved
 signal game_won
 ## The hot tap was opened with the valve closed: tells the valve to flash.
 signal valve_hint
+## The steam valve was turned (true = open).
+signal valve_changed(open: bool)
 
 enum RitualResult { IGNORED, PROGRESS, FAIL, SOLVED }
 
@@ -129,11 +131,13 @@ func ritual_action(id: String, idle_event: String) -> void:
 	match ritual_input(id):
 		RitualResult.PROGRESS:
 			Sfx.play("tick")
+			say("ritual_clue_%d" % ritual_step)
 		RitualResult.FAIL:
 			Sfx.play("error", -6.0)
 			say("ritual_fail")
 		RitualResult.IGNORED:
-			say(idle_event)
+			if not idle_event.is_empty():
+				say(idle_event)
 		RitualResult.SOLVED:
 			pass
 

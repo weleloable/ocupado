@@ -1,6 +1,7 @@
 class_name Mop
 extends Interactable
-## The mop, "la veterana de 2009". Decoration that is also a ritual element.
+## The mop, "la veterana de 2009". It always says the same single line (the clue of the ritual
+## points here), and it is also a ritual element.
 
 
 func _ready() -> void:
@@ -17,4 +18,5 @@ func interact() -> void:
 	t.tween_property(self, "rotation:z", 0.05, 0.08)
 	t.tween_property(self, "rotation:z", -0.05, 0.1)
 	t.tween_property(self, "rotation:z", 0.0, 0.08)
-	GameState.ritual_action("mop", "mop")
+	GameState.say("mop")
+	GameState.ritual_action("mop", "")

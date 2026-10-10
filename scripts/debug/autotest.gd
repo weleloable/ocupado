@@ -14,8 +14,8 @@ func _ready() -> void:
 	# Aiming: the plug and the valve must be reachable with the crosshair from normal positions.
 	await _aim_check(Vector3(-1.0, 0.05, -0.34), 90.0, -48.0, room.plug, "plug (near)")
 	await _aim_check(Vector3(-0.6, 0.05, -0.34), 90.0, -34.0, room.plug, "plug (far)")
-	await _aim_check(Vector3(1.0, 0.05, 0.63), -90.0, -31.0, room.valve, "valve (near)")
-	await _aim_check(Vector3(0.5, 0.05, 0.63), -90.0, -20.0, room.valve, "valve (far)")
+	await _aim_check(Vector3(1.0, 0.05, -0.4), -30.0, -26.0, room.valve, "steam valve (near)")
+	await _aim_check(Vector3(0.6, 0.05, -0.2), -39.0, -19.0, room.valve, "steam valve (far)")
 	game.player.global_position = Vector3(0, 0.05, 0.7)
 	game.player.rotation.y = 0.0
 	game.player.camera.rotation.x = 0.0
@@ -38,6 +38,7 @@ func _ready() -> void:
 	room.dryer.interact()
 	await _wait(2.6)
 	_check(GameState.ritual_step == 1, "ritual step 1 after dryer")
+	_check(room.ritual_clues[0].visible and not room.ritual_clues[1].visible, "clue 2 appears after the dryer, clue 3 not yet")
 	room.chain.interact()  # wrong: the mop was expected
 	_check(GameState.ritual_step == 0, "ritual reset after mistake")
 	await _wait(2.4)
@@ -48,10 +49,13 @@ func _ready() -> void:
 	await _wait(2.6)
 	room.mop.interact()
 	_check(GameState.ritual_step == 2, "ritual step 2 after mop")
+	_check(room.ritual_clues[1].visible, "clue 3 appears after the mop")
+	_check(Lines.NARRATOR["mop"].size() == 1, "the mop has a single line")
 	room.chain.interact()
 	await _wait(2.4)
 	room.cold_tap.interact()
 	_check(GameState.ritual_step == 4, "ritual step 4 after cold tap")
+	_check(room.ritual_clues[2].visible and room.ritual_clues[3].visible, "clues 4 and 5 appear")
 	room.dryer.interact()
 	await _wait(0.5)
 	_check(GameState.ritual_done, "ritual solved")

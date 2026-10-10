@@ -27,7 +27,10 @@ const CLOSEUPS := [
 	[Vector3(-1.2, 0.05, -0.2), 90.0, 0.0, "c_mirror"],
 	[Vector3(-0.9, 0.05, 0.2), 0.0, 8.0, "c_north_left"],
 	[Vector3(1.0, 0.05, 0.6), -90.0, 4.0, "c_east_toilet"],
-	[Vector3(1.0, 0.05, 0.63), -90.0, -31.0, "c_valve"],
+	[Vector3(1.0, 0.05, -0.4), -30.0, -22.0, "c_steam"],
+	[Vector3(0.2, 0.05, 0.4), -35.0, -5.0, "c_steam_far"],
+	[Vector3(-0.9, 0.05, 0.4), 180.0, 12.0, "c_clue_south"],
+	[Vector3(1.0, 0.05, 0.2), -90.0, 5.0, "c_clue_east"],
 	[Vector3(-1.0, 0.05, -0.34), 90.0, -48.0, "c_plug"],
 	[Vector3(-0.2, 0.05, 0.5), 90.0, 12.0, "c_west_clues"],
 ]
@@ -46,6 +49,12 @@ func _ready() -> void:
 					"3": GameState.solve_mirror()
 					"4": GameState.solve_keypad()
 	await get_tree().create_timer(1.5).timeout
+	for arg: String in OS.get_cmdline_user_args():
+		if arg == "--clues":
+			for clue in game.room.ritual_clues:
+				clue.visible = true
+		if arg == "--steam":
+			game.room.valve.interact()
 	var poses: Array = CLOSEUPS if "--closeups" in OS.get_cmdline_user_args() else POSES
 	for pose: Array in poses:
 		GameState.controls_locked = true

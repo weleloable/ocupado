@@ -74,6 +74,18 @@ const NARRATOR := {
 		"Eso no tocaba. Vuelta a empezar, aprendiz.",
 		"Error de protocolo. El espíritu del bar está decepcionado.",
 	],
+	"ritual_clue_1": [
+		"Bien. Aparece en la pared de encima una frase con luz negra: «2. LA VETERANA DE 2009».",
+	],
+	"ritual_clue_2": [
+		"Sigue el hilo. Junto a la fregona aparece otra frase: «3. EL RÍO QUE ARRASTRA».",
+	],
+	"ritual_clue_3": [
+		"Cada acierto deja un recado. Junto al váter se enciende: «4. LO FRÍO QUE MOJA».",
+	],
+	"ritual_clue_4": [
+		"Casi. Encima del espejo aparece lo último: «5. OTRA VEZ EL VIENTO».",
+	],
 	"ritual_solved": [
 		"¡Clonc! El dispensador de papel se ha abierto. El ritual funciona. Nadie sabe por qué.",
 		"El dispensador de papel se abre de golpe. Tanto ritual para un trozo de papel.",
@@ -108,8 +120,6 @@ const NARRATOR := {
 	],
 	"mop": [
 		"Lleva aquí desde 2009. Es la que manda.",
-		"La fregona te observa. No la toques. Tiene contactos.",
-		"Huele a lejía y a decisiones dudosas.",
 	],
 	"roll": [
 		"Rollo vacío. El clásico.",
@@ -126,17 +136,17 @@ const NARRATOR := {
 		"El váter no es la salida. Ni lo pienses.",
 	],
 	"hot_tap_cold": [
-		"Sale fría. La llave del agua caliente está cerrada: mira la válvula roja de la tubería, junto al váter.",
-		"Agua helada. La válvula roja de la tubería del váter (la que parpadea) es la llave del agua caliente.",
-		"El grifo caliente escupe agua fría. Gira la válvula roja de la tubería, junto al váter, y espera.",
+		"Sale fría. Al agua caliente le falta vapor: abre la llave de la tubería roja de la esquina, junto a la puerta.",
+		"Agua helada. La tubería roja de vapor de la esquina tiene una llave: ábrela y espera.",
+		"El grifo caliente escupe agua fría. El vapor está cortado en la llave de la tubería roja, junto a la puerta.",
 	],
 	"valve_open": [
-		"Las tuberías gorgotean. Algo caliente viene de camino.",
-		"Clonc. Las tuberías vibran. Agua caliente en camino, con la calma de un lunes.",
+		"El vapor entra en las tuberías con un bufido. Algo caliente viene de camino.",
+		"Clonc. La tubería roja ruge y empieza a sisear. Agua caliente en camino, con la calma de un lunes.",
 	],
 	"valve_close": [
-		"Cierras la válvula. La caldera suspira, aliviada.",
-		"Válvula cerrada. El agua caliente vuelve a su cueva.",
+		"Cortas el vapor. La caldera suspira, aliviada.",
+		"Llave cerrada. El vapor se queda en su cueva.",
 	],
 	"hot_water_arrives": [
 		"Por fin agua caliente. Este baño empieza a parecer una sauna finlandesa de baja categoría.",
@@ -209,14 +219,14 @@ const HINTS := {
 		["Paco", "Dale a la 2, a la 3 y a la 4. De nada. Por cierto, me estoy comiendo tu tapa."],
 	],
 	"ritual": [
-		["Marta", "Ahora que tienes luz negra, lee las paredes. Las pintadas hablan en clave, como mis ex."],
-		["Javi", "El viento que seca es el secador. El río que arrastra, la cadena. Lo frío que moja, el grifo frío. Y la veterana de 2009... ¿quién lleva aquí desde 2009? Pregúntale al narrador."],
+		["Marta", "Ahora que tienes luz negra, lee la pintada del ritual, la de la pared de la puerta. Solo te dice el primer paso. Cada acierto te enseña el siguiente, por la sala."],
+		["Javi", "El viento que seca es el secador. Tócalo y saldrá una frase nueva en la pared. Síguela: cada objeto correcto te da la pista del siguiente. La veterana de 2009 es la que lleva ahí desde 2009."],
 		["Lucía", "Secador, fregona, cadena, grifo frío y otra vez secador. Si fallas, desde el principio. Como un parroquiano de verdad."],
 	],
 	"mirror": [
 		["Paco", "¿Te has lavado las manos? Con agua caliente. Y que salga caliente, que no es lo mismo."],
-		["Marta", "Si el grifo caliente sale frío, alguien ha cerrado la llave de paso. Busca una válvula roja en una tubería. Y con el grifo frío cerrado, que si no sale tibia."],
-		["Javi", "Abre la válvula roja (tubería del váter), cierra el grifo frío, abre el caliente y espera unos segundos mirando al espejo. Sale '3 3'. Si cierras el grifo, se borra."],
+		["Marta", "Si el grifo caliente sale frío, es que falta vapor. Mira la tubería roja de la esquina, junto a la puerta: tiene una llave. Y con el grifo frío cerrado, que si no sale tibia."],
+		["Javi", "Gira la palanca de la tubería roja de vapor (esquina de la puerta), cierra el grifo frío, abre el caliente y espera unos segundos mirando al espejo. Sale '3 3'. Si cierras el grifo, se borra."],
 	],
 	"keypad": [
 		["Lucía", "Tienes trozos de un código, ¿no? Junta las piezas, que no es un mueble de Ikea."],

@@ -76,6 +76,7 @@ func _build_all() -> void:
 	_streams["flush"] = _make(_flush())
 	_streams["dryer"] = _make(_dryer())
 	_streams["tap"] = _make(_noise(1.0, 0.35, 0.55, false), true)
+	_streams["steam"] = _make(_noise(1.0, 0.22, 0.85, false), true)
 	_streams["door"] = _make(_mix(_sweep(110.0, 210.0, 0.7, "square", 0.12), _noise(0.7, 0.15, 0.1)))
 	_streams["hum"] = _make(_hum(), true)
 	_streams["fanfare"] = _make(_fanfare())

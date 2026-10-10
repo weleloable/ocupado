@@ -1,47 +1,49 @@
 class_name Valve
 extends Interactable
-## Red hot-water valve on the toilet pipe. Without it open, the hot tap runs cold.
-## Local space: +Z points into the room, the pipe runs vertically through the origin.
-## It flashes when the player opens the hot tap with the valve closed (see GameState.valve_hint).
+## Lever valve of the red steam pipe (see SteamPipe). Without steam, the hot tap runs cold.
+## Local space: the valve sits on a pipe that runs along X; the lever is closed when it points
+## across the pipe (towards the room) and open when it lies along the pipe.
+## It flashes when the player opens the hot tap with the steam closed (GameState.valve_hint).
 
-var _wheel: Node3D
-var _angle: float = 0.0
-var _red: StandardMaterial3D
+const CLOSED_ANGLE := PI / 2.0
+const OPEN_ANGLE := 0.0
+
+var _lever: Node3D
+var _lever_mat: StandardMaterial3D
 
 
 func _ready() -> void:
-	prompt_text = "Abrir la válvula roja"
-	var metal := Build.mat(Color(0.5, 0.5, 0.53))
-	_red = Build.mat_unique(Color(0.9, 0.08, 0.06), 1.2)
-	add_mesh_box(Vector3(0.1, 0.1, 0.1), Vector3.ZERO, metal)
-	add_mesh_cylinder(0.018, 0.12, Vector3(0, 0, 0.08), metal, Vector3(PI / 2.0, 0, 0))
-	_wheel = Node3D.new()
-	_wheel.position = Vector3(0, 0, 0.15)
-	add_child(_wheel)
-	track_mesh(Build.cylinder(_wheel, 0.1, 0.02, Vector3.ZERO, _red, Vector3(PI / 2.0, 0, 0)))
-	track_mesh(Build.box(_wheel, Vector3(0.2, 0.02, 0.024), Vector3.ZERO, _red))
-	track_mesh(Build.box(_wheel, Vector3(0.02, 0.2, 0.024), Vector3.ZERO, _red))
-	# Hanging tag.
-	add_mesh_box(Vector3(0.3, 0.1, 0.008), Vector3(0, -0.19, 0.12), Build.mat(Color(0.95, 0.95, 0.9)))
-	Build.label_fit(self, "AGUA\nCALIENTE", Vector3(0, -0.19, 0.126), 0.0, Vector2(0.26, 0.085), Color(0.75, 0.08, 0.08))
-	add_shape(Vector3(0.28, 0.4, 0.3), Vector3(0, -0.06, 0.12))
+	prompt_text = "Abrir el vapor"
+	var metal := Build.mat(Color(0.45, 0.45, 0.48))
+	_lever_mat = Build.mat_unique(Color(1.0, 0.8, 0.05), 1.0)
+	add_mesh_box(Vector3(0.14, 0.12, 0.14), Vector3.ZERO, metal)
+	add_mesh_cylinder(0.02, 0.1, Vector3(0, 0.1, 0), metal)
+	_lever = Node3D.new()
+	_lever.position = Vector3(0, 0.17, 0)
+	_lever.rotation.y = CLOSED_ANGLE
+	add_child(_lever)
+	track_mesh(Build.box(_lever, Vector3(0.3, 0.035, 0.05), Vector3(0.08, 0, 0), _lever_mat))
+	track_mesh(Build.cylinder(_lever, 0.035, 0.05, Vector3(-0.08, 0, 0), _lever_mat))
+	# Generous aim area: lever, body and a stretch of pipe.
+	add_shape(Vector3(0.5, 0.34, 0.34), Vector3(0, 0.06, 0))
 	GameState.valve_hint.connect(_flash)
 
 
 func interact() -> void:
 	GameState.valve_open = not GameState.valve_open
-	prompt_text = "Cerrar la válvula roja" if GameState.valve_open else "Abrir la válvula roja"
-	_angle += PI if GameState.valve_open else -PI
-	create_tween().tween_property(_wheel, "rotation:z", _angle, 0.6).set_trans(Tween.TRANS_SINE)
+	prompt_text = "Cerrar el vapor" if GameState.valve_open else "Abrir el vapor"
+	var target := OPEN_ANGLE if GameState.valve_open else CLOSED_ANGLE
+	create_tween().tween_property(_lever, "rotation:y", target, 0.35).set_trans(Tween.TRANS_BACK)
 	Sfx.play("clunk")
 	if GameState.valve_open:
 		Sfx.play("rattle", -4.0)
+	GameState.valve_changed.emit(GameState.valve_open)
 	GameState.say("valve_open" if GameState.valve_open else "valve_close")
 
 
-## Draws the player's eye: three bright flashes.
+## Draws the player's eye: three bright flashes of the lever.
 func _flash() -> void:
 	var t := create_tween()
 	for _i in 3:
-		t.tween_property(_red, "emission_energy_multiplier", 5.0, 0.25)
-		t.tween_property(_red, "emission_energy_multiplier", 1.2, 0.35)
+		t.tween_property(_lever_mat, "emission_energy_multiplier", 6.0, 0.25)
+		t.tween_property(_lever_mat, "emission_energy_multiplier", 1.0, 0.35)

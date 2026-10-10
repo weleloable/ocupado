@@ -15,6 +15,7 @@ var corridor_light: OmniLight3D
 var tube_mat: StandardMaterial3D
 var black_tube_mat: StandardMaterial3D
 var hidden_labels: Array[Label3D] = []
+var ritual_clues: Array[Label3D] = []
 
 var door: Door
 var keypad: Keypad
@@ -28,6 +29,7 @@ var dryer: HandDryer
 var dispenser: Dispenser
 var mop: Mop
 var valve: Valve
+var steam: SteamPipe
 var plug: SinkPlug
 var sink_mount: Node3D
 var flood: Flood
@@ -46,6 +48,7 @@ func _ready() -> void:
 	_build_lights()
 	_build_door_wall()
 	_build_east_wall()
+	_build_steam_corner()
 	_build_west_wall()
 	_build_south_wall()
 	_build_decor()
@@ -213,9 +216,6 @@ func _build_east_wall() -> void:
 
 	var m := mount("east", 0.75, 0.0)
 	var porcelain := Build.mat(Color(0.93, 0.93, 0.9))
-	valve = Valve.new()
-	valve.position = Vector3(-0.12, 1.15, 0.05)
-	m.add_child(valve)
 	toilet = DecorItem.new().setup("Mirar el váter", "toilet")
 	m.add_child(toilet)
 	toilet.add_mesh_cylinder(0.17, 0.4, Vector3(0, 0.2, 0.36), porcelain)
@@ -290,35 +290,62 @@ func _build_decor() -> void:
 	sign.add_shape(Vector3(0.64, 0.26, 0.05), Vector3(0, 0, 0.02))
 
 
+## North-east corner: the red steam pipe with the lever valve.
+func _build_steam_corner() -> void:
+	steam = SteamPipe.new()
+	steam.position = Vector3(1.86, 0.0, -1.36)
+	add_child(steam)
+	valve = steam.valve
+
+
 func _build_graffiti() -> void:
 	var marker := Color(0.08, 0.08, 0.1)
 	var red := Color(0.6, 0.08, 0.08)
 	var blue := Color(0.1, 0.2, 0.6)
-	_graffiti("north", 1.45, 1.8, "AQUÍ SE VIENE\nA LLORAR", Vector2(0.85, 0.3), marker, false)
+	_graffiti("north", 1.35, 1.75, "AQUÍ SE VIENE\nA LLORAR", Vector2(0.7, 0.26), marker, false)
+	_graffiti("north", 1.4, 2.25, "LA LLAVE ESTÁ EN TU CORAZÓN\n(es broma, es un teclado)", Vector2(0.9, 0.2), blue, false)
 	_graffiti("south", -0.9, 1.85, "SI LEES ESTO,\nESTÁS EN UN BAÑO", Vector2(0.85, 0.3), red, false)
-	_graffiti("west", 1.0, 1.72, "LA LLAVE ESTÁ\nEN TU CORAZÓN\n(es broma, es un teclado)", Vector2(0.9, 0.4), blue, false)
 	_graffiti("east", 0.3, 1.72, "PACO\nTE QUIERO\n(NO)", Vector2(0.55, 0.4), red, false)
 	# Hidden until the black light turns on.
 	var neon := Color(0.75, 1.0, 0.2)
 	var pink := Color(1.0, 0.35, 0.85)
 	var cyan := Color(0.3, 0.95, 1.0)
-	_graffiti("north", -1.28, 1.86,
-			"EL RITUAL DEL PARROQUIANO\n1. EL VIENTO QUE SECA\n2. LA VETERANA DE 2009\n3. EL RÍO QUE ARRASTRA\n4. LO FRÍO QUE MOJA\n5. OTRA VEZ EL VIENTO",
-			Vector2(1.15, 0.7), neon, true)
-	_graffiti("west", 0.95, 2.2, "EL CALIENTE NO SALE\nSI ALGUIEN LO CIERRA", Vector2(1.0, 0.3), pink, true)
+	# The ritual is a chain: the first line is visible with the black light, and every correct step
+	# reveals the next one next to the object that was just used (see _on_ritual_progressed).
+	_graffiti("north", -1.28, 1.86, "EL RITUAL DEL PARROQUIANO\n1. EL VIENTO QUE SECA", Vector2(1.15, 0.3), neon, true)
+	ritual_clues = [
+		_graffiti("south", -0.9, 2.25, "2. LA VETERANA DE 2009", Vector2(0.85, 0.16), neon, false, true),
+		_graffiti("west", 1.1, 1.75, "3. EL RÍO QUE ARRASTRA", Vector2(0.8, 0.16), neon, false, true),
+		_graffiti("east", 1.05, 1.75, "4. LO FRÍO QUE MOJA", Vector2(0.75, 0.16), neon, false, true),
+		_graffiti("west", -0.2, 2.25, "5. OTRA VEZ EL VIENTO", Vector2(0.85, 0.16), neon, false, true),
+	]
+	_graffiti("west", 0.95, 2.2, "SIN VAPOR NO HAY\nAGUA CALIENTE", Vector2(1.0, 0.3), pink, true)
 	_graffiti("south", 0.9, 1.88, "EL PAPEL NO SE GANA,\nSE MERECE", Vector2(0.8, 0.2), pink, true)
 	_graffiti("east", -0.75, 2.3, "ESTO NO SE LIMPIA\nDESDE 2009", Vector2(0.75, 0.2), neon, true)
 	_graffiti("west", -1.0, 1.9, "¿PRISA?\nTAPA EL LAVABO,\nABRE TODO Y ESPERA.\nEL BAR YA LIMPIARÁ", Vector2(0.8, 0.5), cyan, true)
+	GameState.ritual_progressed.connect(_on_ritual_progressed)
 
 
+## `chain_clue` labels start hidden and are shown by the ritual, not by the black light.
 func _graffiti(wall: String, along: float, y: float, text: String, max_size: Vector2, color: Color,
-		hidden: bool) -> void:
+		hidden: bool, chain_clue: bool = false) -> Label3D:
 	var m := mount(wall, along, y)
-	var l := Build.label_fit(m, text, Vector3(0, 0, 0.012), 0.0, max_size, color, 5 if hidden else 0)
-	if hidden:
+	var l := Build.label_fit(m, text, Vector3(0, 0, 0.012), 0.0, max_size, color, 5 if (hidden or chain_clue) else 0)
+	if hidden or chain_clue:
 		l.outline_modulate = Color(color.r * 0.3, color.g * 0.3, color.b * 0.3)
 		l.visible = false
+	if hidden:
 		hidden_labels.append(l)
+	return l
+
+
+## Step `step` of the ritual was just done: show the clue for the next one.
+func _on_ritual_progressed(step: int) -> void:
+	if step >= 1 and step <= ritual_clues.size():
+		var clue := ritual_clues[step - 1]
+		clue.visible = true
+		clue.modulate.a = 0.0
+		create_tween().tween_property(clue, "modulate:a", 1.0, 0.8)
 
 
 ## Flood controller of the secret ending (needs the taps, the door and the sink mount).
