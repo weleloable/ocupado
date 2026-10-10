@@ -195,3 +195,10 @@ Comentarios del jugador: "el puzle 2 me gusta como idea (ir tocando cosas) pero 
 - ¿Se entiende que la tubería roja de la esquina es "el vapor del agua caliente"? ¿Se ve desde el principio?
 - ¿Se leen bien las frases que aparecen junto a cada objeto? ¿Se encuentra la siguiente sin ayuda?
 - ¿El siseo y los chorros de vapor quedan bien? (No he podido oírlos ni ver el movimiento, solo capturas fijas.)
+
+## Exportación a .exe e icono
+
+- El juego tiene icono propio: `icon.png` (icono del proyecto, ventana y barra de tareas) e `icon.ico` (varios tamaños, 16 a 256 px). Se generan por código con `godot --headless --path . --script res://tools/make_icon.gd` (una puerta con el cartel OCUPADO y una caña sobre azulejo verde).
+- El preset "Windows Desktop" (`export_presets.cfg`) ya usa `res://icon.ico`, y lleva nombre de producto "Ocupado", versión 1.0.0 y descripción.
+- Para que Godot **incruste** el icono en el `.exe` hace falta **rcedit**. Está descargado en `C:\Users\Eduardo\Documents\EDUARDO\herramientas\rcedit\rcedit-x64.exe` (v2.0.0, oficial de electron/rcedit) y hay que indicarlo una vez en Godot: Editor → Ajustes del editor → Exportar → Windows → Rcedit.
+- Los `.exe` y `.pck` exportados no se versionan (`.gitignore`).
