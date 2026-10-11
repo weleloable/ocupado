@@ -58,6 +58,12 @@ func _ready() -> void:
 
 	pause_menu = PauseMenu.new()
 	add_child(pause_menu)
+
+	# Movil (web): joystick, mirar arrastrando y botones. En PC no se crea.
+	if TouchControls.activo():
+		var tactil := TouchControls.new()
+		tactil.game = self
+		add_child(tactil)
 	pause_menu.resume_pressed.connect(_set_state.bind(UiState.PLAYING))
 	pause_menu.restart_pressed.connect(restart_requested.emit)
 	pause_menu.quit_pressed.connect(menu_requested.emit)
@@ -86,7 +92,9 @@ func _set_state(new_state: UiState) -> void:
 	get_tree().paused = state == UiState.PAUSED
 	pause_menu.visible = state == UiState.PAUSED
 	GameState.controls_locked = state != UiState.PLAYING
-	if state == UiState.PLAYING:
+	# En tactil no se captura: el navegador del movil no puede, y con el raton
+	# "capturado" a medias cada toque se tomaria tambien como mirar y usar.
+	if state == UiState.PLAYING and not TouchControls.activo():
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -119,7 +127,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if state != UiState.PLAYING:
 		return
-	if event is InputEventMouseButton and event.is_pressed() and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+	if event is InputEventMouseButton and event.is_pressed() and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED \
+			and not TouchControls.activo():
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		get_viewport().set_input_as_handled()
 		return
@@ -158,6 +167,8 @@ func _on_won() -> void:
 	phone.close()
 	_set_state(UiState.WON)
 	print("VICTORIA: tiempo %s, cerveza %.1f C" % [GameState.format_time(GameState.final_time), GameState.final_temp])
+	# Dentro de la app Ruta de Bares (web): se le avisa para guardar el record.
+	AppBridge.fin()
 	var victory := VictoryScreen.new()
 	add_child(victory)
 	victory.replay_pressed.connect(restart_requested.emit)

@@ -29,8 +29,10 @@ func _ready() -> void:
 	_temp_label = UiUtil.label(root, "", Vector2(520, 30), Vector2(84, 16), 13,
 			Color.WHITE, HORIZONTAL_ALIGNMENT_RIGHT)
 
-	UiUtil.label(root, "[H] Móvil   [Esc] Pausa", Vector2(8, 6), Vector2(200, 14), 10,
-			Color(1, 1, 1, 0.6))
+	# En tactil esos botones estan en pantalla (TouchControls): las teclas sobran.
+	if not TouchControls.activo():
+		UiUtil.label(root, "[H] Móvil   [Esc] Pausa", Vector2(8, 6), Vector2(200, 14), 10,
+				Color(1, 1, 1, 0.6))
 
 	add_child(Narrator.new())
 
@@ -39,7 +41,7 @@ func _process(_delta: float) -> void:
 	var text := ""
 	if player != null and not GameState.controls_locked and player.focused != null \
 			and is_instance_valid(player.focused):
-		text = "[E] " + player.focused.get_prompt()
+		text = ("" if TouchControls.activo() else "[E] ") + player.focused.get_prompt()
 	prompt_label.text = text
 	_update_thermo(GameState.get_temperature())
 

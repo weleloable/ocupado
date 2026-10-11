@@ -1,10 +1,12 @@
 extends Node
 ## Entry point: shows the main menu or starts a game directly.
-## Debug args (after `--`): --autotest, --shots=<dir> [--lights] [--solve=1234]
+## Debug args (after `--`): --autotest, --autotest-flood, --autotest-tactil, --tactil,
+## --shots=<dir> [--lights] [--solve=1234]
 
 const Screenshots := preload("res://scripts/debug/screenshots.gd")
 const Autotest := preload("res://scripts/debug/autotest.gd")
 const AutotestFlood := preload("res://scripts/debug/autotest_flood.gd")
+const AutotestTouch := preload("res://scripts/debug/autotest_touch.gd")
 
 var game: Game
 var menu: MainMenu
@@ -15,6 +17,7 @@ func _ready() -> void:
 	var lights := false
 	var autotest := false
 	var autotest_flood := false
+	var autotest_touch := false
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with("--shots="):
 			shots_dir = arg.substr(8)
@@ -24,8 +27,26 @@ func _ready() -> void:
 			autotest_flood = true
 		elif arg == "--autotest":
 			autotest = true
+		elif arg == "--autotest-tactil":
+			autotest_touch = true
+			TouchControls.forzado = true
+		elif arg == "--tactil":
+			# Para probar los mandos del movil en PC.
+			TouchControls.forzado = true
 
-	var debug_run := autotest or autotest_flood or not shots_dir.is_empty()
+	# Web: `?prueba=ganar` empieza y gana sola a los 2 s, para probar el aviso a la app
+	# (AppBridge) sin jugar 10 minutos. Solo hace trampas contra uno mismo: el record es local.
+	var prueba_ganar := OS.has_feature("web") \
+			and str(JavaScriptBridge.eval("new URLSearchParams(location.search).get('prueba') || ''", true)) == "ganar"
+	if prueba_ganar:
+		GameState.persist_endings = false
+		_start_game()
+		var t := create_tween()
+		t.tween_interval(2.0)
+		t.tween_callback(GameState.win.bind("door"))
+		return
+
+	var debug_run := autotest or autotest_flood or autotest_touch or not shots_dir.is_empty()
 	if debug_run or "--restart-test" in OS.get_cmdline_user_args():
 		GameState.persist_endings = false
 	if debug_run or GameState.skip_menu:
@@ -40,6 +61,11 @@ func _ready() -> void:
 		flood_test.game = game
 		flood_test.process_mode = Node.PROCESS_MODE_ALWAYS
 		add_child(flood_test)
+	if autotest_touch:
+		var touch_test := AutotestTouch.new()
+		touch_test.game = game
+		touch_test.process_mode = Node.PROCESS_MODE_ALWAYS
+		add_child(touch_test)
 	if autotest:
 		var test := Autotest.new()
 		test.game = game
