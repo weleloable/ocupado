@@ -19,11 +19,15 @@ func _ready() -> void:
 
 	var play := UiUtil.button(root, "Jugar", Vector2(250, 162), Vector2(140, 34), 16)
 	play.pressed.connect(play_pressed.emit)
-	var quit := UiUtil.button(root, "Salir", Vector2(250, 204), Vector2(140, 34), 16)
-	quit.pressed.connect(func() -> void: get_tree().quit())
+	# En web "Salir" no puede cerrar nada (la pestana o la app son del navegador).
+	if not OS.has_feature("web"):
+		var quit := UiUtil.button(root, "Salir", Vector2(250, 204), Vector2(140, 34), 16)
+		quit.pressed.connect(func() -> void: get_tree().quit())
 
-	UiUtil.label(root,
-			"WASD moverse  ·  Ratón mirar  ·  E / clic interactuar\nH pedir pista por el móvil  ·  Esc pausa",
+	var controles := "WASD moverse  ·  Ratón mirar  ·  E / clic interactuar\nH pedir pista por el móvil  ·  Esc pausa"
+	if TouchControls.activo():
+		controles = "Izquierda: muévete  ·  Derecha: arrastra para mirar\nToca o pulsa USAR para usar  ·  Móvil: pistas"
+	UiUtil.label(root, controles,
 			Vector2(0, 262), Vector2(640, 36), 12, Color(0.75, 0.85, 0.75), HORIZONTAL_ALIGNMENT_CENTER)
 	UiUtil.label(root, "Finales descubiertos: %d/%d" % [GameState.discovered_endings().size(), GameState.ENDING_IDS.size()],
 			Vector2(0, 304), Vector2(640, 16), 11, Color(0.7, 0.85, 1.0), HORIZONTAL_ALIGNMENT_CENTER)

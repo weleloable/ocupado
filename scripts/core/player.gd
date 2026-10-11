@@ -42,13 +42,30 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var rel: Vector2 = (event as InputEventMouseMotion).screen_relative
-		rotate_y(-rel.x * MOUSE_SENS)
-		_pitch = clampf(_pitch - rel.y * MOUSE_SENS, -1.45, 1.45)
-		camera.rotation.x = _pitch
+		mirar(rel * MOUSE_SENS)
 	elif event.is_action_pressed("interact") and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		if focused != null and is_instance_valid(focused) and focused.can_interact():
-			focused.interact()
+		if interactuar():
 			get_viewport().set_input_as_handled()
+
+
+## Gira la vista (radianes en x = guinada, en y = cabeceo). Lo usan el raton y los
+## mandos tactiles (TouchControls), que no capturan el raton.
+func mirar(rel: Vector2) -> void:
+	if GameState.controls_locked:
+		return
+	rotate_y(-rel.x)
+	_pitch = clampf(_pitch - rel.y, -1.45, 1.45)
+	camera.rotation.x = _pitch
+
+
+## Usa lo que apunta la cruz, si se puede. Devuelve si se uso algo.
+func interactuar() -> bool:
+	if GameState.controls_locked:
+		return false
+	if focused != null and is_instance_valid(focused) and focused.can_interact():
+		focused.interact()
+		return true
+	return false
 
 
 func _physics_process(delta: float) -> void:
