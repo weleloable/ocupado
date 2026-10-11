@@ -8,6 +8,8 @@ name: Publicar web
 on:
   push:
     branches: [master]
+  # En un PR se pasan los autotests y se exporta, pero NO se publica.
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -76,11 +78,13 @@ jobs:
           ls -la export/web
 
       - uses: actions/upload-pages-artifact@v5
+        if: github.event_name != 'pull_request'
         with:
           path: export/web
 
   publicar:
     needs: exportar
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
